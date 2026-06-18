@@ -1,0 +1,54 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-background: #f7f7f5;
+  --color-foreground: #1c1c1a;
+  --color-card: #ffffff;
+  --color-card-foreground: #1c1c1a;
+  --color-muted: #ededea;
+  --color-muted-foreground: #6b6b66;
+  --color-border: #e2e2dd;
+  --color-input: #e2e2dd;
+  --color-primary: #b5471f;
+  --color-primary-foreground: #ffffff;
+  --color-accent: #f0ece6;
+  --color-accent-foreground: #1c1c1a;
+  --color-success: #15803d;
+  --color-success-bg: #dcfce7;
+  --color-danger: #b91c1c;
+  --color-danger-bg: #fee2e2;
+  --color-ring: #b5471f;
+
+  --radius: 0.625rem;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Readable prose for the documentation page */
+.prose :where(code):not(:where([class~="not-prose"] *)) {
+  background-color: var(--color-muted);
+  padding: 0.15em 0.35em;
+  border-radius: 0.3rem;
+  font-size: 0.85em;
+  font-weight: 500;
+}
+.prose :where(code):not(:where([class~="not-prose"] *))::before,
+.prose :where(code):not(:where([class~="not-prose"] *))::after {
+  content: "";
+}

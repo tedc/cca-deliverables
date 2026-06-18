@@ -1,0 +1,2759 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "totalQuestions": 130,
+    "createdFor": "Edo - CCA-F Exam Preparation",
+    "domainWeights": {
+      "Agentic Architecture": 0.27,
+      "Tool Design & MCP": 0.18,
+      "Claude Code Configuration": 0.2,
+      "Prompt Engineering": 0.2,
+      "Context Management": 0.15
+    },
+    "scenarios": [
+      "Customer Support",
+      "Multi-Agent Research",
+      "Code Generation",
+      "CI/CD",
+      "Document Processing",
+      "General"
+    ],
+    "passingScore": 720,
+    "scoreScale": [
+      100,
+      1000
+    ],
+    "examQuestionCount": 60,
+    "examTimeMinutes": 120
+  },
+  "questions": [
+    {
+      "id": "Q001",
+      "domain": "Agentic Architecture",
+      "scenario": "Multi-Agent Research",
+      "subdomain": "Error Propagation",
+      "difficulty": "easy",
+      "source": "Practice Exam",
+      "question": "The document analysis subagent encounters a corrupted PDF file it cannot parse. How should it handle this error?",
+      "options": {
+        "A": "Return the error with context to the coordinator agent, letting it decide how to proceed.",
+        "B": "Attempt recovery by trying alternative parsing methods until successful, even if it takes multiple attempts.",
+        "C": "Skip the corrupted file silently and continue processing the remaining documents.",
+        "D": "Halt all processing and require user intervention before continuing."
+      },
+      "correctAnswer": "A",
+      "explanation": "Hub-and-spoke: coordinator deve avere visibility per decisioni informate (skip, retry, notify). Worker non decide autonomamente quando non può recuperare localmente.",
+      "tags": [
+        "hub-and-spoke",
+        "error-propagation"
+      ]
+    },
+    {
+      "id": "Q002",
+      "domain": "Tool Design & MCP",
+      "scenario": "Multi-Agent Research",
+      "subdomain": "Tool Distribution",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "The synthesis agent frequently needs to verify facts. 85% are simple lookups, 15% require complex research. Currently all go through web_search via coordinator. How to optimize?",
+      "options": {
+        "A": "Give synthesis full web search access for direct verification.",
+        "B": "Implement coordinator-level caching for verification calls.",
+        "C": "Batch verification requests through web_search agent.",
+        "D": "Give synthesis a scoped verify_fact tool for simple lookups, complex verifications continue via coordinator."
+      },
+      "correctAnswer": "D",
+      "explanation": "Principle of least privilege: scoped tool gestisce 85% direttamente, complex via coordinator. Capability minima necessaria, non capability completa.",
+      "tags": [
+        "least-privilege",
+        "scoped-tools"
+      ]
+    },
+    {
+      "id": "Q003",
+      "domain": "Agentic Architecture",
+      "scenario": "Multi-Agent Research",
+      "subdomain": "Multi-Agent Orchestration",
+      "difficulty": "easy",
+      "source": "Practice Exam",
+      "question": "Web search and document analysis agents both completed and need to pass findings to synthesis. How in orchestrator-workers pattern?",
+      "options": {
+        "A": "Agents communicate directly to merge findings before sending to synthesis.",
+        "B": "Coordinator passes both sets of findings to synthesis for unified integration.",
+        "C": "Each agent passes findings independently to synthesis in arrival order.",
+        "D": "Synthesis queries each upstream agent to pull findings as needed."
+      },
+      "correctAnswer": "B",
+      "explanation": "Hub-and-spoke canonical: coordinator raccoglie e routa al next component. No A2A communication (anti-pattern).",
+      "tags": [
+        "hub-and-spoke",
+        "no-a2a"
+      ]
+    },
+    {
+      "id": "Q004",
+      "domain": "Context Management",
+      "scenario": "Multi-Agent Research",
+      "subdomain": "Long Context Position Effects",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Combined upstream outputs (web search 85K + document analysis 70K = 155K tokens) cause synthesis quality to degrade. Most effective fix?",
+      "options": {
+        "A": "Intermediate summarization agent condenses findings before synthesis.",
+        "B": "Increase synthesis context window allocation.",
+        "C": "Split synthesis into multiple passes processing subsets.",
+        "D": "Modify upstream agents to return structured data (key facts, citations, relevance scores) instead of verbose content."
+      },
+      "correctAnswer": "D",
+      "explanation": "Bloat upstream = fix upstream. Structured data alla sorgente preserva essenziale, elimina verbose content + reasoning chains. Summarization downstream processa comunque 155K.",
+      "tags": [
+        "structured-output",
+        "upstream-fix"
+      ]
+    },
+    {
+      "id": "Q005",
+      "domain": "Context Management",
+      "scenario": "Multi-Agent Research",
+      "subdomain": "Long Context Position Effects",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Synthesis quality inconsistent when aggregated results contain 8+ findings; middle-section findings often missed. Best approach?",
+      "options": {
+        "A": "Reduce to max 5 findings per synthesis call.",
+        "B": "Place key findings summary at beginning + organize details with explicit section headers.",
+        "C": "Pass findings in random order to avoid positional bias.",
+        "D": "Stream findings one at a time."
+      },
+      "correctAnswer": "B",
+      "explanation": "Lost-in-the-middle: primacy effect (summary all'inizio) + section headers per navigation. Position-aware structuring.",
+      "tags": [
+        "lost-in-middle",
+        "primacy-effect"
+      ]
+    },
+    {
+      "id": "Q006",
+      "domain": "Tool Design & MCP",
+      "scenario": "Multi-Agent Research",
+      "subdomain": "Tool Distribution",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Document analysis requests sometimes routed to web search agent instead. Tools: analyze_content (docs) and analyze_web (search). Root cause and fix?",
+      "options": {
+        "A": "Coordinator routing logic incorrect; rewrite task decomposition prompt with explicit rules.",
+        "B": "Semantic overlap between names confuses model; rename and rewrite descriptions.",
+        "C": "Rename web search tool to extract_web_results, update description to clearly reference URLs.",
+        "D": "Add few-shot examples in coordinator prompt showing correct routing."
+      },
+      "correctAnswer": "C",
+      "explanation": "Tool interface fix: nuovo nome + description chiarisce purpose elimina semantic overlap. Più specifico di B (più operativo).",
+      "tags": [
+        "tool-naming",
+        "interface-design"
+      ]
+    },
+    {
+      "id": "Q007",
+      "domain": "Agentic Architecture",
+      "scenario": "Multi-Agent Research",
+      "subdomain": "Error Propagation",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Document analysis subagent fails on PDFs: 60% transient (timeouts, succeed on retry), 40% permanent (corrupted). All failures propagate to coordinator. Restructure how?",
+      "options": {
+        "A": "Coordinator retries all failures up to 3 times before propagating.",
+        "B": "Exponential backoff at coordinator level.",
+        "C": "Subagent does local recovery for transient, propagates to coordinator only what cannot resolve, including attempts and partial results.",
+        "D": "Separate retry agent handles all failures."
+      },
+      "correctAnswer": "C",
+      "explanation": "Handle errors at lowest level capable. Subagent recovers transient (60%), coordinator riceve solo permanent (40%) con structured context.",
+      "tags": [
+        "local-recovery",
+        "lowest-level"
+      ]
+    },
+    {
+      "id": "Q008",
+      "domain": "Agentic Architecture",
+      "scenario": "Multi-Agent Research",
+      "subdomain": "Error Propagation",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Web search subagent returns results for only 3 of 5 source categories. Other 2 temporarily unavailable. How should synthesis handle?",
+      "options": {
+        "A": "Block synthesis and request retry of missing sources.",
+        "B": "Synthesize using 3 available sources without noting gap.",
+        "C": "Structure output with coverage annotations distinguishing well-supported findings from gap areas.",
+        "D": "Infer likely findings from missing categories based on related content."
+      },
+      "correctAnswer": "C",
+      "explanation": "Graceful degradation with transparency. Coverage annotation preserva valore + propaga uncertainty per downstream decisions.",
+      "tags": [
+        "graceful-degradation",
+        "coverage-annotation"
+      ]
+    },
+    {
+      "id": "Q009",
+      "domain": "Tool Design & MCP",
+      "scenario": "Multi-Agent Research",
+      "subdomain": "Tool Distribution",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Document agent has fetch_url (general purpose) but sometimes uses it for web searches. How to constrain?",
+      "options": {
+        "A": "System prompt instruction: 'Never use fetch_url for web search.'",
+        "B": "Few-shot examples showing correct fetch_url usage.",
+        "C": "Replace fetch_url with load_document tool that validates URL points to document format.",
+        "D": "PostToolUse hook detecting search URLs and rerouting."
+      },
+      "correctAnswer": "C",
+      "explanation": "Capability removal a livello tool interface. Scoped tool che valida format. Behavior diventa structurally impossible, not just discouraged.",
+      "tags": [
+        "capability-removal",
+        "scoped-tools"
+      ]
+    },
+    {
+      "id": "Q010",
+      "domain": "Agentic Architecture",
+      "scenario": "Multi-Agent Research",
+      "subdomain": "Multi-Agent Orchestration",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Web search and document analysis agents work in parallel and duplicate work on overlapping sources. How to resolve?",
+      "options": {
+        "A": "Agents share intermediate findings via shared context store during execution.",
+        "B": "Run agents sequentially.",
+        "C": "Coordinator explicitly partitions research space before delegation, assigning distinct subtopics.",
+        "D": "Deduplication step after both complete."
+      },
+      "correctAnswer": "C",
+      "explanation": "Preventive fix: coordinator partition before delegation. Addresses root cause (unclear task boundaries). Preserves parallel execution.",
+      "tags": [
+        "task-partitioning",
+        "preventive"
+      ]
+    },
+    {
+      "id": "Q011",
+      "domain": "Agentic Architecture",
+      "scenario": "Multi-Agent Research",
+      "subdomain": "Error Propagation",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Web search subagent times out on complex topic. Coordinator must decide retry/proceed/escalate. How should subagent communicate failure?",
+      "options": {
+        "A": "Return structured error context: failure type, attempted query, partial results, alternative approaches.",
+        "B": "Return simple boolean failure flag.",
+        "C": "Auto-retry up to 3 times before reporting.",
+        "D": "Escalate immediately to human."
+      },
+      "correctAnswer": "A",
+      "explanation": "Structured error context dà al coordinator info per intelligent recovery: retry con modified query, accept partial, alternative approach.",
+      "tags": [
+        "structured-errors",
+        "recovery-context"
+      ]
+    },
+    {
+      "id": "Q012",
+      "domain": "Agentic Architecture",
+      "scenario": "Multi-Agent Research",
+      "subdomain": "Multi-Agent Orchestration",
+      "difficulty": "hard",
+      "source": "Practice Exam",
+      "question": "Topic 'impact of AI on creative industries': final report covers digital art, graphic design, photography but misses music, writing, film. Subagents completed successfully. Root cause?",
+      "options": {
+        "A": "Coordinator decomposition too narrow; subagent assignments don't cover all domains.",
+        "B": "Synthesis biased toward visual content.",
+        "C": "Web search training data underrepresents non-visual creative domains.",
+        "D": "Subagents exceeded token budgets on visual content."
+      },
+      "correctAnswer": "A",
+      "explanation": "Coordinator logs riveleranno decomposition: 3 visual arts subtasks, missing music/writing/film. Subagents executed assigned tasks. Root cause = narrow decomposition.",
+      "tags": [
+        "decomposition",
+        "task-coverage"
+      ]
+    },
+    {
+      "id": "Q013",
+      "domain": "Agentic Architecture",
+      "scenario": "Multi-Agent Research",
+      "subdomain": "Error Propagation",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Materials research: web search queries 3 sources—journals (success), patent DB (timeout), industry reports (0 results). How to communicate to coordinator?",
+      "options": {
+        "A": "All three as 'failures requiring retry'.",
+        "B": "Only successful results, others as not-available.",
+        "C": "Distinguish access failures (timeout, needs retry) from valid empty results (0 results, successful query).",
+        "D": "Aggregate as 'partial success' without distinction."
+      },
+      "correctAnswer": "C",
+      "explanation": "Timeout (access failure) e '0 results' (valid empty) semantically distinct. Coordinator retries timeout, accepts empty as informative finding.",
+      "tags": [
+        "error-semantics",
+        "valid-empty"
+      ]
+    },
+    {
+      "id": "Q014",
+      "domain": "Agentic Architecture",
+      "scenario": "Multi-Agent Research",
+      "subdomain": "Multi-Agent Orchestration",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Document analysis finds two credible sources with contradicting market size ($4.2B vs $7.8B). How should the agent proceed?",
+      "options": {
+        "A": "Complete analysis with both figures, annotate conflict with source attribution, let coordinator decide reconciliation.",
+        "B": "Choose more recent source's figure.",
+        "C": "Average the two figures.",
+        "D": "Block and escalate to human."
+      },
+      "correctAnswer": "A",
+      "explanation": "Separation of concerns: document analysis completes task senza blocking, preserva entrambi i data point con attribution, defer reconciliation al coordinator.",
+      "tags": [
+        "separation-concerns",
+        "conflict-annotation"
+      ]
+    },
+    {
+      "id": "Q015",
+      "domain": "Agentic Architecture",
+      "scenario": "Multi-Agent Research",
+      "subdomain": "Multi-Agent Orchestration",
+      "difficulty": "easy",
+      "source": "Practice Exam",
+      "question": "A colleague suggests document analysis sends output directly to web search agent for cross-referencing, bypassing coordinator. Primary advantage of keeping hub-and-spoke?",
+      "options": {
+        "A": "Direct A2A more efficient for large outputs.",
+        "B": "Subagents coordinate better speaking directly.",
+        "C": "Direct A2A more flexible for emergent reasoning.",
+        "D": "Coordinator can observe all interactions, handle errors consistently, control what info each subagent receives."
+      },
+      "correctAnswer": "D",
+      "explanation": "Hub-and-spoke: centralized visibility, consistent error handling, fine-grained control. Direct A2A perde tutti questi vantaggi.",
+      "tags": [
+        "hub-and-spoke",
+        "centralized-control"
+      ]
+    },
+    {
+      "id": "Q016",
+      "domain": "Tool Design & MCP",
+      "scenario": "Customer Support",
+      "subdomain": "Tool Interface Design",
+      "difficulty": "easy",
+      "source": "Practice Exam",
+      "question": "Production logs show agent frequently calls get_customer when users ask about order status. Tool descriptions are minimal: 'Get customer info' and 'Lookup order details.' How to improve?",
+      "options": {
+        "A": "Routing instruction in system prompt for order status queries.",
+        "B": "Few-shot examples showing correct selection.",
+        "C": "Expand tool descriptions with input formats, example queries, edge cases, boundaries explaining when to use vs similar tools.",
+        "D": "PreToolUse hook detecting 'order' keywords."
+      },
+      "correctAnswer": "C",
+      "explanation": "Tool descriptions sono primary input for selection. Expanding con input formats + examples + boundaries = low-effort high-leverage first step.",
+      "tags": [
+        "tool-descriptions",
+        "first-step"
+      ]
+    },
+    {
+      "id": "Q017",
+      "domain": "Prompt Engineering",
+      "scenario": "Customer Support",
+      "subdomain": "Tool Selection Reliability",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Agent sometimes selects get_customer when lookup_order is correct in ambiguous scenarios. Tool descriptions already detailed. Most effective next step?",
+      "options": {
+        "A": "Further expand tool descriptions.",
+        "B": "Add 4-6 examples targeting ambiguous scenarios, each with reasoning for tool choice over plausible alternatives.",
+        "C": "Separate routing model classifies intent before tool selection.",
+        "D": "Switch to higher-tier model."
+      },
+      "correctAnswer": "B",
+      "explanation": "Few-shot targeting ambiguous scenarios con reasoning esplicito insegna decision-making comparativo. Worked examples > declarative rules per nuanced selection.",
+      "tags": [
+        "few-shot",
+        "ambiguous-scenarios"
+      ]
+    },
+    {
+      "id": "Q018",
+      "domain": "Context Management",
+      "scenario": "Customer Support",
+      "subdomain": "Escalation Decisions",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Agent has called get_customer and lookup_order. Which scenario should trigger escalation?",
+      "options": {
+        "A": "Price match against competitor; policies cover own-site price drops within 14 days but silent on competitor pricing.",
+        "B": "Return past 30-day window; policy clearly disallows.",
+        "C": "Refund on damaged item; policy clearly allows full refund for damaged.",
+        "D": "Customer frustrated with harsh language but straightforward request."
+      },
+      "correctAnswer": "A",
+      "explanation": "Genuine policy gap: silent on competitor matching. Agent cannot fabricate policy, must escalate for human judgment.",
+      "tags": [
+        "escalation",
+        "policy-gap"
+      ]
+    },
+    {
+      "id": "Q019",
+      "domain": "Prompt Engineering",
+      "scenario": "Customer Support",
+      "subdomain": "Self-Evaluation Patterns",
+      "difficulty": "hard",
+      "source": "Practice Exam",
+      "question": "Complex cases (billing disputes, multi-order returns): satisfaction 15% lower despite correct resolutions. Root cause: inconsistent explanations—sometimes missing policy, timeline, or next steps. Specific context gaps vary by case. Best approach?",
+      "options": {
+        "A": "Few-shot examples for 5 common complex case types showing complete explanations.",
+        "B": "Confirmation step: 'Does this fully address your concern?'",
+        "C": "Increase model tier for complex cases.",
+        "D": "Self-critique step evaluating draft for completeness (addresses concern, includes context, anticipates follow-ups)."
+      },
+      "correctAnswer": "D",
+      "explanation": "'Gaps vary by case' = pattern variabile. Self-critique con checklist esplicita (policy + timeline + next steps?) cattura gap variable case-by-case. Few-shot per pattern fissi.",
+      "tags": [
+        "self-critique",
+        "checklist-explicit"
+      ]
+    },
+    {
+      "id": "Q020",
+      "domain": "Prompt Engineering",
+      "scenario": "Customer Support",
+      "subdomain": "Tool Selection Reliability",
+      "difficulty": "hard",
+      "source": "Practice Exam",
+      "question": "Single-concern requests: 94% accuracy. Multi-concern in one message (refund + address update): drops to 58%. Most effective approach?",
+      "options": {
+        "A": "Consolidate tools into more general-purpose ones.",
+        "B": "Preprocessing layer: separate model call decomposes multi-concern into individual requests.",
+        "C": "Few-shot examples demonstrating correct reasoning and tool sequence for multi-concern.",
+        "D": "Response validation that re-prompts when responses incomplete."
+      },
+      "correctAnswer": "C",
+      "explanation": "94% single = capability esiste. Drop multi = pattern recognition gap. Few-shot insegna pattern compositivo zero-cost. Decomposition (B) overengineering quando capability c'è.",
+      "tags": [
+        "few-shot",
+        "pattern-recognition"
+      ]
+    },
+    {
+      "id": "Q021",
+      "domain": "Context Management",
+      "scenario": "Customer Support",
+      "subdomain": "Conversation Context Management",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Support agent uses progressive summarization at 70% context. After summarization, agent provides wrong transactional details (amounts, dates, order numbers). How to fix?",
+      "options": {
+        "A": "Extract transactional facts (amounts, dates, order numbers) into persistent 'case facts' block in every prompt, outside summarized history.",
+        "B": "Increase summarization threshold to 90%.",
+        "C": "More sophisticated summarization model.",
+        "D": "Restart conversation when summarization needed."
+      },
+      "correctAnswer": "A",
+      "explanation": "Summarization inherently lossy per dettagli precisi. Persistent case facts block preserva critical info outside summarized history.",
+      "tags": [
+        "persistent-facts",
+        "structured-context"
+      ]
+    },
+    {
+      "id": "Q022",
+      "domain": "Tool Design & MCP",
+      "scenario": "Customer Support",
+      "subdomain": "Multi-step Workflow Enforcement",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "12% of cases: agent skips get_customer and proceeds with lookup_order/process_refund using just name, causing wrong-customer errors. How to enforce sequence?",
+      "options": {
+        "A": "Strengthen system prompt warnings.",
+        "B": "Programmatic prerequisite blocking lookup_order/process_refund until get_customer returned verified customer_id.",
+        "C": "Few-shot examples showing get_customer first.",
+        "D": "Train on more examples emphasizing sequence."
+      },
+      "correctAnswer": "B",
+      "explanation": "Programmatic prerequisite (PreToolUse hook) = deterministic guarantee. Hard sequence requirement va architecturale, non instruction-level.",
+      "tags": [
+        "preToolUse-hook",
+        "hard-rule"
+      ]
+    },
+    {
+      "id": "Q023",
+      "domain": "Tool Design & MCP",
+      "scenario": "Customer Support",
+      "subdomain": "Tool Selection Reliability",
+      "difficulty": "easy",
+      "source": "Practice Exam",
+      "question": "Agent frequently calls get_customer when users ask about order status. First diagnostic step?",
+      "options": {
+        "A": "Switch to more capable model.",
+        "B": "Add few-shot examples.",
+        "C": "Review tool descriptions to ensure they clearly distinguish each tool's purpose.",
+        "D": "Implement routing hook for order keywords."
+      },
+      "correctAnswer": "C",
+      "explanation": "Tool descriptions = primary input per tool selection. First diagnostic step: verify se descriptions distinguish purpose.",
+      "tags": [
+        "first-step",
+        "tool-descriptions"
+      ]
+    },
+    {
+      "id": "Q024",
+      "domain": "Agentic Architecture",
+      "scenario": "Customer Support",
+      "subdomain": "Escalation Decisions",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Agent achieves 55% first-contact resolution (target 80%). Logs reveal over-escalating straightforward cases AND attempting cases that should escalate. Most effective?",
+      "options": {
+        "A": "Lower escalation threshold.",
+        "B": "Add general escalation guidelines.",
+        "C": "Add explicit escalation criteria with few-shot examples demonstrating when to escalate vs resolve autonomously.",
+        "D": "Separate escalation classifier model."
+      },
+      "correctAnswer": "C",
+      "explanation": "Explicit criteria + few-shot demonstrating both decisions = teach decision boundary. Most proportionate first intervention.",
+      "tags": [
+        "explicit-criteria",
+        "decision-boundary"
+      ]
+    },
+    {
+      "id": "Q025",
+      "domain": "Prompt Engineering",
+      "scenario": "Customer Support",
+      "subdomain": "Tool Selection Reliability",
+      "difficulty": "hard",
+      "source": "Practice Exam",
+      "question": "When customers include 'account', agent calls get_customer first 78%. Without 'account', calls lookup_order first 93%. Tool descriptions well-written and unambiguous. Most likely root cause?",
+      "options": {
+        "A": "Model training creates associations between 'account' and customer operations, overriding tool descriptions.",
+        "B": "Model requires more training data; should be fine-tuned.",
+        "C": "Tool descriptions need negative examples specifying when NOT to use.",
+        "D": "System prompt contains keyword-sensitive instructions steering behavior based on terms like 'account'."
+      },
+      "correctAnswer": "D",
+      "explanation": "Systematic + keyword-triggered (78/93 binary) = explicit routing logic nel prompt. Keyword nel msg utente trigger = prompt routing, non training prior. B prescriptive (fine-tune out of scope).",
+      "tags": [
+        "prompt-routing",
+        "keyword-trigger"
+      ]
+    },
+    {
+      "id": "Q026",
+      "domain": "Agentic Architecture",
+      "scenario": "Customer Support",
+      "subdomain": "Multi-step Workflow Orchestration",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Simple refund: 6 tool calls. Complex (return + refund damaged + update address): 18 tool calls, 54% resolution. Best restructuring?",
+      "options": {
+        "A": "Decompose into distinct concerns, parallel investigate with shared customer context, synthesize unified resolution.",
+        "B": "Higher model tier for complex.",
+        "C": "Clarification step asking customer to break down.",
+        "D": "Limit to one concern per request."
+      },
+      "correctAnswer": "A",
+      "explanation": "Decomposition + parallel + shared context elimina redundant fetching, reduces calls. Pattern multi-concern orchestration.",
+      "tags": [
+        "decomposition",
+        "parallel-context"
+      ]
+    },
+    {
+      "id": "Q027",
+      "domain": "Agentic Architecture",
+      "scenario": "Customer Support",
+      "subdomain": "Agentic Loop Fundamentals",
+      "difficulty": "easy",
+      "source": "Practice Exam",
+      "question": "Implementing agentic loop. After each API call, must determine continue/stop. How?",
+      "options": {
+        "A": "Parse response content for keywords like 'I'll check'.",
+        "B": "Fixed iterations (max 10) regardless.",
+        "C": "Check stop_reason: continue when 'tool_use', stop when 'end_turn'.",
+        "D": "Continue until customer ends conversation."
+      },
+      "correctAnswer": "C",
+      "explanation": "stop_reason = explicit structured signal for loop control. Mai parsing content.",
+      "tags": [
+        "stop-reason",
+        "loop-control"
+      ]
+    },
+    {
+      "id": "Q028",
+      "domain": "Prompt Engineering",
+      "scenario": "Customer Support",
+      "subdomain": "Ambiguous Result Handling",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "get_customer returns all matches when searching by name. Agent picks first, wrong-customer errors in 15% of cases with shared names. Most reliable fix?",
+      "options": {
+        "A": "Tool returns only first match.",
+        "B": "Sort by most-recent activity, pick most active.",
+        "C": "Silently pick customer with most orders.",
+        "D": "Instruct agent to ask additional identifier (email, phone, order#) when multiple matches before customer-specific action."
+      },
+      "correctAnswer": "D",
+      "explanation": "User ha definitive knowledge della propria identity. One conversational turn batte 15% error rate.",
+      "tags": [
+        "disambiguation",
+        "ask-user"
+      ]
+    },
+    {
+      "id": "Q029",
+      "domain": "Context Management",
+      "scenario": "Customer Support",
+      "subdomain": "Agent SDK Hook Patterns",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Agent misinterprets MCP tool data: Unix timestamps treated as ISO, cents as dollars confused. How to normalize?",
+      "options": {
+        "A": "System prompt explains format from each server.",
+        "B": "PostToolUse hook intercepts results, applies format transformations before agent processing.",
+        "C": "Modify each MCP server to standardize.",
+        "D": "Few-shot examples showing interpretation."
+      },
+      "correctAnswer": "B",
+      "explanation": "PostToolUse hook = centralized, deterministic format normalization. Code-level transformations > LLM interpretation. Works anche per third-party MCP.",
+      "tags": [
+        "postToolUse-hook",
+        "format-normalization"
+      ]
+    },
+    {
+      "id": "Q030",
+      "domain": "Agentic Architecture",
+      "scenario": "Customer Support",
+      "subdomain": "Parallel Tool Execution",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Agent averages 4+ round-trips per resolution. Claude frequently requests get_customer + lookup_order sequentially when both needed upfront. Most effective?",
+      "options": {
+        "A": "Increase max_tokens for planning.",
+        "B": "Composite tools like get_customer_with_orders.",
+        "C": "Speculative execution.",
+        "D": "Prompt Claude to batch tool requests per turn, return all tool results together before next API call."
+      },
+      "correctAnswer": "D",
+      "explanation": "Claude supports nativamente parallel tool use. Sequential = prompt issue, not architectural. Minimal change sfrutta capability esistente.",
+      "tags": [
+        "parallel-tool-use",
+        "prompt-batching"
+      ]
+    },
+    {
+      "id": "Q031",
+      "domain": "Agentic Architecture",
+      "scenario": "Multi-Agent Research",
+      "subdomain": "Multi-Agent Orchestration",
+      "difficulty": "hard",
+      "source": "Drill Original",
+      "question": "Multi-agent research: coordinator + 3 parallel subagents + synthesis + new fact-checker subagent invoked after draft. When fact-checker finds inaccuracy, coordinator re-invokes synthesis with correction note. Synthesis re-introduces same inaccuracy 38% of time despite access to source documents. Best approach?",
+      "options": {
+        "A": "Pass correction note as system message vs user message.",
+        "B": "Coordinator includes previous correction notes from prior iterations in synthesis context, marked 'previously identified errors to avoid'.",
+        "C": "Replace synthesis with more capable model for revisions.",
+        "D": "PostToolUse hook validates output against correction notes."
+      },
+      "correctAnswer": "B",
+      "explanation": "Synthesis vede solo last correction, re-derives stesso errore. Storia correzioni in context = memory persistente. Context gap, non capability gap.",
+      "tags": [
+        "context-memory",
+        "iteration-history"
+      ]
+    },
+    {
+      "id": "Q032",
+      "domain": "Agentic Architecture",
+      "scenario": "Customer Support",
+      "subdomain": "Multi-step Workflow Orchestration",
+      "difficulty": "hard",
+      "source": "Drill Original",
+      "question": "Mortgage app: coordinator delegates to 3 parallel subagents (credit, income, property), then decision_agent. When credit identifies severe issues (bankruptcy, defaults), compliance_checker running in parallel produces generic assessment. Stakeholders require compliance reflects risk findings WITHOUT sacrificing latency for low-severity cases. Most effective?",
+      "options": {
+        "A": "Switch parallel to sequential always.",
+        "B": "Coordinator-level severity check after credit_assessor: if high, re-invoke compliance with risk context; if low, use original parallel result.",
+        "C": "Compliance_checker invokes credit_assessor mid-execution.",
+        "D": "Summary_generator reconciles by re-querying both when conflicts detected."
+      },
+      "correctAnswer": "B",
+      "explanation": "Conditional branching nel coordinator: parallel per low-severity (preserve latency), serial re-invoke per high-severity (correctness). C viola hub-and-spoke.",
+      "tags": [
+        "conditional-orchestration",
+        "stakeholder-vincoli"
+      ]
+    },
+    {
+      "id": "Q033",
+      "domain": "Agentic Architecture",
+      "scenario": "Multi-Agent Research",
+      "subdomain": "Multi-Agent Orchestration",
+      "difficulty": "hard",
+      "source": "Drill Original",
+      "question": "Multi-agent research: 3 parallel subagents (security, performance, style reviewers) + summary_agent producing unified PR comments. Summary treats all 3 with equal weight even when security has high-severity vulnerabilities. Security team requires high-severity security always prominent placement. Most effective?",
+      "options": {
+        "A": "Coordinator passes findings in priority order (security first) leveraging primacy.",
+        "B": "Add explicit priority hierarchy in summary_agent's system prompt: high-severity security always prominent, style condensed when security concerns exist.",
+        "C": "Restructure: security_reviewer runs first; if high-severity, format as primary content before invoking summary.",
+        "D": "Add priority_weight field in structured format, summary allocates output proportionally."
+      },
+      "correctAnswer": "B",
+      "explanation": "Problem downstream = policy fix downstream agent. Parallel preserved. C sacrifica parallelization. D coordination overhead. A primacy fragile per 'always' requirement.",
+      "tags": [
+        "downstream-policy",
+        "explicit-priority"
+      ]
+    },
+    {
+      "id": "Q034",
+      "domain": "Agentic Architecture",
+      "scenario": "Customer Support",
+      "subdomain": "Multi-step Workflow Enforcement",
+      "difficulty": "medium",
+      "source": "Drill Original",
+      "question": "Refund agent: policy requires refunds over $1000 need manager approval. Enforced via system prompt. Compliance audit found 23 violations in 3 months where agent processed >$1000 without approval. Most effective enforcement?",
+      "options": {
+        "A": "Stronger system prompt + few-shot examples.",
+        "B": "PreToolUse hook on process_refund checks amount, blocks if >$1000 without manager_approval field.",
+        "C": "Restructure workflow: evaluate amount first, route high-value to manager queue.",
+        "D": "Post-processing validation flags violations for review."
+      },
+      "correctAnswer": "B",
+      "explanation": "Hard compliance + soft enforcement already failed (23 violations) = deterministic hook. Blocks at tool call layer, independent of model behavior.",
+      "tags": [
+        "preToolUse-hook",
+        "soft-failed"
+      ]
+    },
+    {
+      "id": "Q035",
+      "domain": "Agentic Architecture",
+      "scenario": "Customer Support",
+      "subdomain": "Agentic Loop Fundamentals",
+      "difficulty": "medium",
+      "source": "Drill Original",
+      "question": "Support agent agentic loop has 15-iteration cap. Loop terminates at iteration 15 even when Claude mid-task (stop_reason was tool_use). What does this indicate?",
+      "options": {
+        "A": "stop_reason unreliable.",
+        "B": "Iteration cap hit; consider raising or implement intermediate result handling.",
+        "C": "Claude in infinite loop, cap correctly stops.",
+        "D": "Model needs upgrade."
+      },
+      "correctAnswer": "B",
+      "explanation": "Iteration cap = safety guardrail. Hit during legitimate work = raise cap or save intermediate. stop_reason resta primary control.",
+      "tags": [
+        "iteration-cap",
+        "safety-guardrail"
+      ]
+    },
+    {
+      "id": "Q036",
+      "domain": "Tool Design & MCP",
+      "scenario": "Customer Support",
+      "subdomain": "Tool Interface Design",
+      "difficulty": "hard",
+      "source": "Drill Original",
+      "question": "Insurance claims agent: simple 94%, multi-procedure complete docs 87%, missing docs 71%, multi-procedure AND missing docs 52%. Errors: 60% false positive (approve despite missing critical), 40% false negative (escalate for non-critical optional). check_documentation_completeness returns present/missing list but doesn't distinguish critical vs optional. Best?",
+      "options": {
+        "A": "Modify check_documentation_completeness to return structured output distinguishing critical (required for approval) vs optional (supplementary) missing.",
+        "B": "Few-shot examples for multi-procedure scenarios.",
+        "C": "Self-critique step.",
+        "D": "Decompose claim processing into sequential steps."
+      },
+      "correctAnswer": "A",
+      "explanation": "Errors are criticality misjudgment perché tool non distingue critical/optional. Modello manca info per decidere. Tool interface fix arricchisce output con info discriminante.",
+      "tags": [
+        "tool-interface-fix",
+        "info-gap"
+      ]
+    },
+    {
+      "id": "Q037",
+      "domain": "Tool Design & MCP",
+      "scenario": "Code Generation",
+      "subdomain": "MCP Server Integration",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Team wants GitHub MCP server for PR lookups and CI checks. Server requires API tokens. Best configuration?",
+      "options": {
+        "A": "Each developer adds to personal ~/.claude/mcp.json with their token.",
+        "B": "Add server to project-scoped .mcp.json with env var expansion (${GITHUB_TOKEN}), document required env var in README.",
+        "C": "Commit team's shared token in .mcp.json.",
+        "D": "Use GitHub CLI instead of MCP."
+      },
+      "correctAnswer": "B",
+      "explanation": "Project-scoped + env var expansion = single source of truth + per-developer credentials via env vars. No secrets committed.",
+      "tags": [
+        "mcp-config",
+        "env-vars"
+      ]
+    },
+    {
+      "id": "Q038",
+      "domain": "Tool Design & MCP",
+      "scenario": "Customer Support",
+      "subdomain": "Tool Interface Design",
+      "difficulty": "medium",
+      "source": "Drill Original",
+      "question": "Customer support tool get_customer accepts identifier (email/phone/customer_id) but doesn't specify which. Agent occasionally guesses wrong field. Best fix?",
+      "options": {
+        "A": "Modify get_customer to accept structured input {field: 'email'|'phone'|'id', value: string}.",
+        "B": "System prompt instructions about which identifier to prefer.",
+        "C": "Few-shot examples showing correct passing.",
+        "D": "Tool auto-detect identifier type."
+      },
+      "correctAnswer": "A",
+      "explanation": "Tool interface fix: structured input eliminates ambiguity. Schema force explicit field type.",
+      "tags": [
+        "structured-input",
+        "schema-design"
+      ]
+    },
+    {
+      "id": "Q039",
+      "domain": "Tool Design & MCP",
+      "scenario": "Customer Support",
+      "subdomain": "Tool Interface Design",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Support tool process_refund(amount, reason). Production: agent often provides reason as 'customer requested', insufficient for compliance audit. Best fix?",
+      "options": {
+        "A": "System prompt requires detailed reason.",
+        "B": "Tool description specifies reason format.",
+        "C": "Modify schema: reason requires enum (damaged|wrong_item|not_as_described|other), 'other' requires additional detail.",
+        "D": "Post-processing flags vague reasons."
+      },
+      "correctAnswer": "C",
+      "explanation": "Schema constraint enum + required detail = structural enforcement. Modello vede schema, must provide enum value.",
+      "tags": [
+        "schema-enum",
+        "structural-enforcement"
+      ]
+    },
+    {
+      "id": "Q040",
+      "domain": "Tool Design & MCP",
+      "scenario": "CI/CD",
+      "subdomain": "Tool Selection Reliability",
+      "difficulty": "medium",
+      "source": "Drill Original",
+      "question": "Code review agent: list_changed_files, get_file_diff, get_file_content (full file). Production: agent calls get_file_content for both versions when get_file_diff sufficient. Causes 2x token consumption. Tool descriptions distinguish 'diff' vs 'full content' clearly. Most effective fix?",
+      "options": {
+        "A": "Explicit usage guidance in system prompt: 'Prefer get_file_diff for review tasks; only get_file_content when context beyond changed lines needed.'",
+        "B": "Modify get_file_content description to warn about token consumption.",
+        "C": "Remove get_file_content entirely.",
+        "D": "PreToolUse hook rewrites get_file_content to get_file_diff when context >60%."
+      },
+      "correctAnswer": "A",
+      "explanation": "Tool descriptions distinguish clearly (vincolo) elimina B. Capability ha legittimo edge case. Prompt-level guidance per task specifico = canonical.",
+      "tags": [
+        "usage-guidance",
+        "task-specific"
+      ]
+    },
+    {
+      "id": "Q041",
+      "domain": "Tool Design & MCP",
+      "scenario": "Customer Support",
+      "subdomain": "MCP Server Integration",
+      "difficulty": "medium",
+      "source": "Drill Original",
+      "question": "MCP server exposes query_database tool. Some queries destructive (DROP, DELETE). Need to prevent within agent context while leaving capability for direct admin use. Best implementation?",
+      "options": {
+        "A": "System prompt prohibits destructive SQL.",
+        "B": "Input validation in MCP server's query_database handler rejecting destructive keywords.",
+        "C": "Train model to recognize destructive intent.",
+        "D": "PreToolUse hook with Claude analyzing intent."
+      },
+      "correctAnswer": "B",
+      "explanation": "MCP server tool handler validation = deterministic enforcement at tool execution layer. Server intercepts pre-execution. Capability remains per direct admin use senza il tool.",
+      "tags": [
+        "mcp-validation",
+        "server-side"
+      ]
+    },
+    {
+      "id": "Q042",
+      "domain": "Tool Design & MCP",
+      "scenario": "Code Generation",
+      "subdomain": "Custom Slash Commands",
+      "difficulty": "hard",
+      "source": "Practice Exam",
+      "question": "/migration skill generates DB migration files. Issues: (1) developers invoke without migration name, (2) skill picks up irrelevant context from earlier conversation, (3) developers worry skill could run destructive ops. Fix all three?",
+      "options": {
+        "A": "Validation logic in skill checking migration name.",
+        "B": "Split into /migration-create and /migration-apply with different allowed-tools.",
+        "C": "Move skill to separate workspace.",
+        "D": "argument-hint frontmatter to prompt for required params, context: fork to isolate execution, allowed-tools restricted to file write operations."
+      },
+      "correctAnswer": "D",
+      "explanation": "Three frontmatter features per three problems: argument-hint (missing args), context: fork (context bleeding), allowed-tools (destructive prevention).",
+      "tags": [
+        "skill-frontmatter",
+        "multi-feature"
+      ]
+    },
+    {
+      "id": "Q043",
+      "domain": "Tool Design & MCP",
+      "scenario": "Multi-Agent Research",
+      "subdomain": "Tool Distribution",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Research agent has search_arxiv tool. Description: 'Search arXiv for academic papers.' Agent occasionally uses for general web search. Best fix?",
+      "options": {
+        "A": "Add explicit boundaries in description: 'Use ONLY for academic preprints on arXiv. NOT for industry reports or news.'",
+        "B": "System prompt routing rules.",
+        "C": "Deny rules.",
+        "D": "Replace with general search_papers."
+      },
+      "correctAnswer": "A",
+      "explanation": "Tool description con explicit boundaries (use for X, NOT for Y) = canonical pattern per selection clarity.",
+      "tags": [
+        "description-boundaries",
+        "use-not-use"
+      ]
+    },
+    {
+      "id": "Q044",
+      "domain": "Tool Design & MCP",
+      "scenario": "Customer Support",
+      "subdomain": "Tool Interface Design",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Insurance claims agent: calculate_payout returns cents. Other tools return dollars. Agent sometimes confuses units. Most effective fix?",
+      "options": {
+        "A": "System prompt instructions on cents vs dollars.",
+        "B": "Modify calculate_payout to return dollars.",
+        "C": "PostToolUse hook normalizes all monetary values to consistent format with explicit units.",
+        "D": "Few-shot examples showing correct unit handling."
+      },
+      "correctAnswer": "C",
+      "explanation": "PostToolUse hook = centralized format normalization. Same pattern del 'Unix timestamps vs ISO' practice exam Q.",
+      "tags": [
+        "postToolUse-normalize",
+        "unit-consistency"
+      ]
+    },
+    {
+      "id": "Q045",
+      "domain": "Tool Design & MCP",
+      "scenario": "Document Processing",
+      "subdomain": "Structured Output",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Agent extracts data from invoices via tool_use with JSON schema: vendor, invoice_number, total, items, payment_due_date. Model fabricates dates like '2030-12-31' when invoice doesn't specify. Schema has payment_due_date as required string. Most effective fix?",
+      "options": {
+        "A": "Modify schema to make payment_due_date nullable ['string', 'null'] + instruct return null when not stated.",
+        "B": "Few-shot showing extraction with 'NOT_FOUND' string.",
+        "C": "Post-extraction validation flagging suspicious patterns (30 days after invoice).",
+        "D": "Separate verification API call confirming each field in source."
+      },
+      "correctAnswer": "A",
+      "explanation": "Schema constraint required forces hallucination. Nullable + instruction = schema fix risolve incentive strutturale.",
+      "tags": [
+        "nullable-schema",
+        "prevent-hallucination"
+      ]
+    },
+    {
+      "id": "Q046",
+      "domain": "Tool Design & MCP",
+      "scenario": "Code Generation",
+      "subdomain": "MCP Server Integration",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Team wants Jira MCP. Options: build custom or use community jira-mcp. Standard use cases (read, comment, transition). Canonical choice?",
+      "options": {
+        "A": "Always build custom.",
+        "B": "Use community jira-mcp for standard integrations, reserve custom for team-specific workflows.",
+        "C": "Paid third-party Jira integration service.",
+        "D": "Skip MCP, use Jira REST API directly."
+      },
+      "correctAnswer": "B",
+      "explanation": "Existing community MCP per standard integrations. Custom solo per team-specific. Re-use mature ecosystem.",
+      "tags": [
+        "community-mcp",
+        "build-vs-reuse"
+      ]
+    },
+    {
+      "id": "Q047",
+      "domain": "Tool Design & MCP",
+      "scenario": "Multi-Agent Research",
+      "subdomain": "MCP Resources",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Building MCP server exposing research data access. Server has tools (run_search, fetch_paper) but agents need overview of data categories without making calls. What MCP primitive serves this?",
+      "options": {
+        "A": "list_categories tool agents call first.",
+        "B": "Expose data catalog as MCP resources (read-only, listable, queryable).",
+        "C": "Include catalog in tool descriptions.",
+        "D": "MCP prompts to enumerate categories."
+      },
+      "correctAnswer": "B",
+      "explanation": "MCP resources = readable data, listable. Agents see catalog without tool calls. Tools per actions, resources per visible data inventory.",
+      "tags": [
+        "mcp-resources",
+        "data-catalog"
+      ]
+    },
+    {
+      "id": "Q048",
+      "domain": "Tool Design & MCP",
+      "scenario": "Customer Support",
+      "subdomain": "Tool Interface Design",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Tool get_appointments returns list of appointments. Active customers have 100+ appointments returned. Agent's context fills with mostly-irrelevant historical. Best fix?",
+      "options": {
+        "A": "Modify tool to accept filter params (date_range, status, limit) for scoped retrieval.",
+        "B": "Truncate output to first 10.",
+        "C": "Compress output via summary.",
+        "D": "Higher context window."
+      },
+      "correctAnswer": "A",
+      "explanation": "Tool interface with filter parameters = agent requests appropriate scope. Server-side filtering > client-side truncation.",
+      "tags": [
+        "tool-filtering",
+        "scope-control"
+      ]
+    },
+    {
+      "id": "Q049",
+      "domain": "Tool Design & MCP",
+      "scenario": "Customer Support",
+      "subdomain": "Tool Interface Design",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Code agent has find_definition (locates function/class). Accepts name string, searches entire codebase. Common names ('create') return many matches. Best improvement?",
+      "options": {
+        "A": "Modify tool to accept optional context: {name: string, expected_type?: 'function'|'class'|'method', file_path?: string} for disambiguation.",
+        "B": "Always return first match.",
+        "C": "Return all matches, let agent choose.",
+        "D": "Use embedding similarity."
+      },
+      "correctAnswer": "A",
+      "explanation": "Tool interface enrichment with optional disambiguation parameters. Schema design per ambiguity resolution.",
+      "tags": [
+        "disambiguation-params",
+        "schema-enrichment"
+      ]
+    },
+    {
+      "id": "Q050",
+      "domain": "Tool Design & MCP",
+      "scenario": "Customer Support",
+      "subdomain": "Tool Interface Design",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Customer support tool: process_refund(amount, reason). Compliance new requirement: refunds over $200 need supervisor_id field. How to enforce without breaking existing flow?",
+      "options": {
+        "A": "Modify schema: supervisor_id optional, but PreToolUse hook validates: if amount > $200 and no supervisor_id, block.",
+        "B": "Two tools: process_small_refund and process_large_refund.",
+        "C": "System prompt instructions.",
+        "D": "Tool description warning."
+      },
+      "correctAnswer": "A",
+      "explanation": "Schema optional + hook conditional validation = flexibility under-threshold + enforcement over-threshold.",
+      "tags": [
+        "conditional-enforcement",
+        "schema-optional"
+      ]
+    },
+    {
+      "id": "Q051",
+      "domain": "Tool Design & MCP",
+      "scenario": "Code Generation",
+      "subdomain": "Tool Interface Design",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Code agent has tools: search_files, modify_file, run_tests. modify_file occasionally introduces breaking changes not caught until manual tests. Best mitigation in tool design?",
+      "options": {
+        "A": "Modify modify_file to auto-run tests after each modification.",
+        "B": "PostToolUse hook on modify_file runs related tests, reports failures back to agent.",
+        "C": "Require user confirmation before modify_file.",
+        "D": "tool_choice to force test runs after."
+      },
+      "correctAnswer": "B",
+      "explanation": "PostToolUse hook = automatic post-action validation. Hook runs tests, returns to agent context. Pattern hook canonical.",
+      "tags": [
+        "postToolUse-validation",
+        "test-feedback"
+      ]
+    },
+    {
+      "id": "Q052",
+      "domain": "Tool Design & MCP",
+      "scenario": "Customer Support",
+      "subdomain": "Agent SDK Hook Patterns",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "process_refund tool logs refunds for audit. Want refund_reason expanded with semantic categorization (damaged_item, wrong_size, etc) before logging. Best implementation?",
+      "options": {
+        "A": "Modify process_refund to categorize internally.",
+        "B": "PostToolUse hook categorizes reason, adds to log.",
+        "C": "Pre-processing in system prompt requires categorization.",
+        "D": "Separate categorization tool agent must call."
+      },
+      "correctAnswer": "B",
+      "explanation": "PostToolUse hook = transformation/enrichment di tool result before further processing. Pattern hook canonical for data enrichment.",
+      "tags": [
+        "postToolUse-enrichment",
+        "categorization"
+      ]
+    },
+    {
+      "id": "Q053",
+      "domain": "Tool Design & MCP",
+      "scenario": "Customer Support",
+      "subdomain": "Multi-step Workflow Enforcement",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Refund agent must verify customer identity (get_customer) before process_refund. 8% of refunds proceed without verification. Best enforcement?",
+      "options": {
+        "A": "Stronger system prompt language.",
+        "B": "PreToolUse hook blocking process_refund until get_customer returned verified customer_id in current session.",
+        "C": "Few-shot examples showing verification-first.",
+        "D": "Tool description warning."
+      },
+      "correctAnswer": "B",
+      "explanation": "PreToolUse hook con prerequisite check = deterministic enforcement. State verification, blocks until satisfied. Soft enforcement already failed 8%.",
+      "tags": [
+        "preToolUse-prerequisite",
+        "state-check"
+      ]
+    },
+    {
+      "id": "Q054",
+      "domain": "Tool Design & MCP",
+      "scenario": "Customer Support",
+      "subdomain": "Tool Interface Design",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Refund agent: standard refunds 94% accuracy. Foreign currency refunds flagged 78% for review even though policy explicitly allows automatic processing under $500. Tool descriptions and policy clearly documented. Most likely root cause?",
+      "options": {
+        "A": "Model's training creates conservative bias on non-USD currencies, overriding explicit policy.",
+        "B": "System prompt has older instructions on foreign currency conflicting with newer policy.",
+        "C": "Tool descriptions lack specific guidance for foreign currency.",
+        "D": "System prompt contains keyword-sensitive instructions for currency terms."
+      },
+      "correctAnswer": "A",
+      "explanation": "Attributo intrinseco (currency) + prompt/descriptions clear (explicit signal) + conservative behavior = training prior. Modello bias 'non-domestic transactions' override policy esplicita.",
+      "tags": [
+        "training-prior",
+        "intrinsic-attribute"
+      ]
+    },
+    {
+      "id": "Q055",
+      "domain": "Tool Design & MCP",
+      "scenario": "Multi-Agent Research",
+      "subdomain": "Tool Distribution",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Research system: web_search_agent tools fetch_url, search_web. search_web occasionally produces stale cached results when newer exists. Coordinator detects via synthesis flagging inconsistencies. Best approach?",
+      "options": {
+        "A": "Modify search_web to always fetch fresh.",
+        "B": "Add cache_age metadata to results, agent flags stale when freshness required.",
+        "C": "Separate freshness_validator subagent.",
+        "D": "Replace search_web with cache-bypass version."
+      },
+      "correctAnswer": "B",
+      "explanation": "Information enrichment di tool output: cache_age metadata permette agent decisions su freshness. Server-side filtering del cache decision.",
+      "tags": [
+        "metadata-enrichment",
+        "agent-decision"
+      ]
+    },
+    {
+      "id": "Q056",
+      "domain": "Tool Design & MCP",
+      "scenario": "Customer Support",
+      "subdomain": "Tool Interface Design",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Lookup_order tool returns past 5 years of orders even when user asks about specific date range. Agent occasionally confuses old with recent. Best fix?",
+      "options": {
+        "A": "Modify lookup_order to accept date_range parameter for scoped retrieval.",
+        "B": "Truncate output to most recent 10.",
+        "C": "System prompt instructions about parsing dates.",
+        "D": "PostToolUse hook filters by date."
+      },
+      "correctAnswer": "A",
+      "explanation": "Tool interface scope parameter: agent richiede appropriate date range. Server-side filtering basato su agent intent.",
+      "tags": [
+        "scope-parameter",
+        "filtering-source"
+      ]
+    },
+    {
+      "id": "Q057",
+      "domain": "Tool Design & MCP",
+      "scenario": "Customer Support",
+      "subdomain": "Agent SDK Hook Patterns",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Production observation: agent SDK using multiple MCP servers (CRM, billing, shipping). Each returns data in different formats. Agent occasionally misinterprets. Best centralized fix?",
+      "options": {
+        "A": "PostToolUse hook normalizes all tool outputs into consistent format with explicit type tags before agent processing.",
+        "B": "Modify each MCP server to use standard format.",
+        "C": "Add format examples in system prompt.",
+        "D": "Train model on each server's formats."
+      },
+      "correctAnswer": "A",
+      "explanation": "PostToolUse hook centralizes normalization. Pattern canonical per multi-MCP format consistency.",
+      "tags": [
+        "postToolUse-normalize",
+        "multi-mcp"
+      ]
+    },
+    {
+      "id": "Q058",
+      "domain": "Tool Design & MCP",
+      "scenario": "Code Generation",
+      "subdomain": "MCP Server Integration",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Multiple teams want Salesforce MCP integration. Different Salesforce instances and credentials. Best configuration?",
+      "options": {
+        "A": "Build custom per-team Salesforce MCP servers.",
+        "B": "Community salesforce-mcp with project-scoped .mcp.json + env var expansion (${SALESFORCE_TOKEN}, ${SALESFORCE_INSTANCE_URL}).",
+        "C": "Single shared instance for all teams.",
+        "D": "Each developer configures independently."
+      },
+      "correctAnswer": "B",
+      "explanation": "Community MCP + project scope + env var expansion = canonical pattern. Standard integration. Project scope = team-shared. Env vars per team-specific creds.",
+      "tags": [
+        "mcp-community",
+        "env-pattern"
+      ]
+    },
+    {
+      "id": "Q059",
+      "domain": "Claude Code Configuration",
+      "scenario": "CI/CD",
+      "subdomain": "CI/CD Integration",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "After initial automated review generates 12 findings, developer pushes commits to fix. Re-running review generates same 12 plus 3 new, including already-resolved. How to avoid redundancy?",
+      "options": {
+        "A": "Restrict review scope to files modified in most recent push.",
+        "B": "Cache previous findings and compare.",
+        "C": "Run incremental reviews on git diff only.",
+        "D": "Include prior review findings in context, instructing Claude to report only new or unaddressed issues."
+      },
+      "correctAnswer": "D",
+      "explanation": "Include prior findings + instruct filtering via reasoning. Maintains thoroughness, leverages model reasoning per distinguishing new vs addressed.",
+      "tags": [
+        "incremental-review",
+        "context-prior"
+      ]
+    },
+    {
+      "id": "Q060",
+      "domain": "Claude Code Configuration",
+      "scenario": "CI/CD",
+      "subdomain": "Structured Output",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "CI pipeline runs Claude Code CLI (--print) using CLAUDE.md. Need to post findings as inline PR comments via GitHub API (file path, line, severity, fix). Most effective?",
+      "options": {
+        "A": "Parse free-text output via regex.",
+        "B": "Interactive mode + transformation script.",
+        "C": "CLI flags --output-format json and --json-schema to enforce structured findings, parse output to post via API.",
+        "D": "Write findings to markdown, parse markdown."
+      },
+      "correctAnswer": "C",
+      "explanation": "CLI native capability: --output-format json + --json-schema enforce structured at CLI level. Well-formed JSON con required fields.",
+      "tags": [
+        "cli-flags",
+        "structured-cli"
+      ]
+    },
+    {
+      "id": "Q061",
+      "domain": "Claude Code Configuration",
+      "scenario": "CI/CD",
+      "subdomain": "CI/CD Integration",
+      "difficulty": "easy",
+      "source": "Practice Exam",
+      "question": "Pipeline script runs `claude \"Analyze PR for security\"` but Claude waits for interactive input, pipeline times out. Fix?",
+      "options": {
+        "A": "Add `-p` flag: `claude -p \"Analyze PR for security\"`",
+        "B": "Pipe empty string to stdin.",
+        "C": "Set env var CLAUDE_NON_INTERACTIVE=1.",
+        "D": "Use API directly."
+      },
+      "correctAnswer": "A",
+      "explanation": "-p (--print) flag = documented non-interactive mode. Processes prompt, outputs to stdout, exits.",
+      "tags": [
+        "print-flag",
+        "non-interactive"
+      ]
+    },
+    {
+      "id": "Q062",
+      "domain": "Claude Code Configuration",
+      "scenario": "CI/CD",
+      "subdomain": "Batch Processing",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "CI/CD has 3 analysis types: (1) PR style checks (must <30s), (2) weekly security audits, (3) nightly test generation. Optimize cost?",
+      "options": {
+        "A": "Synchronous for PR checks; Message Batches API for weekly audits and nightly generation.",
+        "B": "Synchronous all three.",
+        "C": "Batch API all three.",
+        "D": "Synchronous for PR + audits; batch only nightly."
+      },
+      "correctAnswer": "A",
+      "explanation": "PR blocks developers = sync. Weekly/nightly flexible timelines = batch API (50% cost saving).",
+      "tags": [
+        "batch-vs-sync",
+        "latency-tolerance"
+      ]
+    },
+    {
+      "id": "Q063",
+      "domain": "Claude Code Configuration",
+      "scenario": "CI/CD",
+      "subdomain": "Task Decomposition",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "PR modifies 14 files. Single-prompt review inconsistent depth—catches some local issues, misses cross-file data flow. Most effective?",
+      "options": {
+        "A": "Limit reviews to 5 files per request.",
+        "B": "Increase max_tokens.",
+        "C": "Specific instructions about file type priorities.",
+        "D": "Split into focused passes: per-file local + separate integration-focused pass for cross-file data flow."
+      },
+      "correctAnswer": "D",
+      "explanation": "Attention dilution su 14 file single pass. Focused per-file + integration pass = covers both dimensions.",
+      "tags": [
+        "task-decomposition",
+        "focused-passes"
+      ]
+    },
+    {
+      "id": "Q064",
+      "domain": "Claude Code Configuration",
+      "scenario": "CI/CD",
+      "subdomain": "False Positive Reduction",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "False positive rates: security 2%, naming 18%, documentation 27%. Developers losing trust in all findings. How to restore?",
+      "options": {
+        "A": "Add confidence score per finding.",
+        "B": "Temporarily disable high-FP categories (style, naming, documentation), run only high-precision while improving prompts.",
+        "C": "Switch to more capable model.",
+        "D": "Manual verification required."
+      },
+      "correctAnswer": "B",
+      "explanation": "Stop noise immediately: disable high-FP. Preserve value high-precision. Migliora problematiche prima di re-enable.",
+      "tags": [
+        "category-disable",
+        "trust-restoration"
+      ]
+    },
+    {
+      "id": "Q065",
+      "domain": "Claude Code Configuration",
+      "scenario": "CI/CD",
+      "subdomain": "Multi-Instance Verification",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Team uses Claude Code for code generation, but same session that generates rationalizes choices when reviewing. Most effective fix?",
+      "options": {
+        "A": "Explicit self-critique instructions in generation prompt.",
+        "B": "Second independent Claude Code instance reviews without generator's reasoning.",
+        "C": "Same session reviews after delay.",
+        "D": "Extended thinking for review."
+      },
+      "correctAnswer": "B",
+      "explanation": "Self-review limitation: same context = same blind spots. Independent instance senza generator's reasoning = fresh perspective.",
+      "tags": [
+        "independent-review",
+        "blind-spots"
+      ]
+    },
+    {
+      "id": "Q066",
+      "domain": "Claude Code Configuration",
+      "scenario": "CI/CD",
+      "subdomain": "Batch Processing",
+      "difficulty": "hard",
+      "source": "Practice Exam",
+      "question": "Code review iterative: Claude analyzes file, static analyzers run, results fed back, Claude refines. Want to migrate to Batch API for cost savings. Primary technical constraint?",
+      "options": {
+        "A": "Batch API smaller context window.",
+        "B": "Batch API doesn't support tool use.",
+        "C": "Batch API one prompt at a time.",
+        "D": "Asynchronous model prevents executing tools mid-request and returning results for continuation."
+      },
+      "correctAnswer": "D",
+      "explanation": "Batch async fire-and-forget = no mechanism per intercept tool call mid-request. Breaks iterative tool-calling workflows.",
+      "tags": [
+        "batch-async",
+        "iterative-incompatible"
+      ]
+    },
+    {
+      "id": "Q067",
+      "domain": "Claude Code Configuration",
+      "scenario": "CI/CD",
+      "subdomain": "Context Provision Methods",
+      "difficulty": "easy",
+      "source": "Practice Exam",
+      "question": "Automated review generates test suggestions for PRs. Reviewing PR adding function, Claude suggests tests but many overlap with existing test files. Reduce duplication?",
+      "options": {
+        "A": "Instructions telling Claude to check for existing tests.",
+        "B": "Separate Claude pass first to identify existing, pass to test gen.",
+        "C": "Include existing test file in context so Claude identifies what's covered.",
+        "D": "Have Claude generate twice as many, filter downstream."
+      },
+      "correctAnswer": "C",
+      "explanation": "Include existing test file in context = Claude può ragionare su what's covered. Information provisioning, non instruction-level reminder.",
+      "tags": [
+        "context-provisioning",
+        "information-access"
+      ]
+    },
+    {
+      "id": "Q068",
+      "domain": "Claude Code Configuration",
+      "scenario": "CI/CD",
+      "subdomain": "Few-Shot Prompting",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Automated reviews identify valid issues but format inconsistent: some paragraphs, some one-liners, some with code snippets. Achieve consistency?",
+      "options": {
+        "A": "Detailed format instructions.",
+        "B": "Stricter system prompt with formatting rules.",
+        "C": "Increase temperature.",
+        "D": "Add 3-4 few-shot examples showing exact format: issue + code location + specific fix suggestion."
+      },
+      "correctAnswer": "D",
+      "explanation": "Few-shot examples = most effective per format consistency. Concrete pattern to follow > abstract instructions.",
+      "tags": [
+        "few-shot-format",
+        "consistency"
+      ]
+    },
+    {
+      "id": "Q069",
+      "domain": "Claude Code Configuration",
+      "scenario": "CI/CD",
+      "subdomain": "Classification Consistency",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Code review system inconsistent severity ratings—similar issues get different severities. Most effective fix?",
+      "options": {
+        "A": "Temperature=0.",
+        "B": "Explicit severity criteria with concrete code examples per level.",
+        "C": "More capable model.",
+        "D": "Multiple instances vote on severity."
+      },
+      "correctAnswer": "B",
+      "explanation": "Explicit criteria + concrete code examples per level = clear reference points. Removes ambiguity systematically.",
+      "tags": [
+        "explicit-criteria",
+        "classification"
+      ]
+    },
+    {
+      "id": "Q070",
+      "domain": "Claude Code Configuration",
+      "scenario": "CI/CD",
+      "subdomain": "Batch Processing",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Reduce costs. Real-time PR reviews (must respond fast) and nightly technical debt reports (no time constraint). Strategy?",
+      "options": {
+        "A": "Batch both.",
+        "B": "Real-time both.",
+        "C": "Nightly off-peak but real-time API.",
+        "D": "Batch for technical debt; real-time for pre-merge."
+      },
+      "correctAnswer": "D",
+      "explanation": "Batch API up to 24h = ideal overnight reports. Unsuitable blocking pre-merge. Match latency requirements.",
+      "tags": [
+        "batch-matching",
+        "latency-requirements"
+      ]
+    },
+    {
+      "id": "Q071",
+      "domain": "Claude Code Configuration",
+      "scenario": "CI/CD",
+      "subdomain": "Batch Processing",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "CI has two review modes: pre-merge-comment (blocks merge, completes fast) and deep-analysis (runs overnight, posts next morning). Ideal candidate for batch?",
+      "options": {
+        "A": "Pre-merge-comment only.",
+        "B": "Both with deep-analysis priority.",
+        "C": "Deep analysis only.",
+        "D": "Neither—iterative review breaks batch."
+      },
+      "correctAnswer": "C",
+      "explanation": "Deep analysis: overnight, tolerates latency, polling = match perfetto Batch API async + 50% cost.",
+      "tags": [
+        "batch-candidate",
+        "async-tolerance"
+      ]
+    },
+    {
+      "id": "Q072",
+      "domain": "Claude Code Configuration",
+      "scenario": "CI/CD",
+      "subdomain": "False Positive Reduction",
+      "difficulty": "hard",
+      "source": "Practice Exam",
+      "question": "Code review averages 15 findings per PR, investigation time = primary complaint. Stakeholders rejected filtering. Make triage faster while keeping all visible?",
+      "options": {
+        "A": "Severity classification with sorting.",
+        "B": "Post-processor suppresses findings matching historical FP signatures.",
+        "C": "Group findings by file to reduce context-switching.",
+        "D": "Require Claude to include reasoning and confidence assessment inline with each finding."
+      },
+      "correctAnswer": "D",
+      "explanation": "Filtering rejected esplicitamente. Inline reasoning + confidence = quick evaluation senza switchare. All visible. Triage faster via information.",
+      "tags": [
+        "inline-reasoning",
+        "filtering-prohibited"
+      ]
+    },
+    {
+      "id": "Q073",
+      "domain": "Claude Code Configuration",
+      "scenario": "CI/CD",
+      "subdomain": "Prompt Specificity",
+      "difficulty": "easy",
+      "source": "Practice Exam",
+      "question": "Automated review analyzes comments/docstrings. Current prompt: 'identify misleading comments.' Flags many acceptable patterns, misses genuinely misleading. Most effective fix?",
+      "options": {
+        "A": "More capable model.",
+        "B": "Explicit criteria: flag only when claimed behavior contradicts actual code behavior.",
+        "C": "Increase temperature.",
+        "D": "Self-critique step."
+      },
+      "correctAnswer": "B",
+      "explanation": "Vague instruction = ambiguous interpretation. Precise criteria eliminates false positives su acceptable patterns AND false negatives su genuine misleading.",
+      "tags": [
+        "prompt-specificity",
+        "explicit-criteria"
+      ]
+    },
+    {
+      "id": "Q074",
+      "domain": "Claude Code Configuration",
+      "scenario": "Code Generation",
+      "subdomain": "CLAUDE.md Modular Organization",
+      "difficulty": "easy",
+      "source": "Practice Exam",
+      "question": "Team's CLAUDE.md over 500 lines mixing TypeScript, testing, deployment, security. Hard to maintain, Claude ignores some sections. How to restructure?",
+      "options": {
+        "A": "Keep CLAUDE.md with section headers and TOC.",
+        "B": "Create separate markdown files in .claude/rules/, each covering one topic.",
+        "C": "Move to project docs, reference from CLAUDE.md.",
+        "D": "Split into multiple CLAUDE.md per major directory."
+      },
+      "correctAnswer": "B",
+      "explanation": ".claude/rules/ con topic-specific markdown = modular organization Anthropic-canonical. Focused, maintainable.",
+      "tags": [
+        "rules-directory",
+        "modular"
+      ]
+    },
+    {
+      "id": "Q075",
+      "domain": "Claude Code Configuration",
+      "scenario": "Code Generation",
+      "subdomain": "Custom Slash Commands",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Creating /explore-alternatives skill for brainstorming. Want brainstorming not to pollute main implementation conversation. How?",
+      "options": {
+        "A": "Instructions to clear context after.",
+        "B": "Add `context: fork` to skill's frontmatter.",
+        "C": "Run skill in separate terminal.",
+        "D": "Manually /clear after."
+      },
+      "correctAnswer": "B",
+      "explanation": "context: fork frontmatter = isolated sub-agent context. Exploration discussion non pollutes main conversation.",
+      "tags": [
+        "context-fork",
+        "isolation"
+      ]
+    },
+    {
+      "id": "Q076",
+      "domain": "Claude Code Configuration",
+      "scenario": "Code Generation",
+      "subdomain": "Path-Specific Rule Configuration",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Codebase has React components in src/components/, API handlers in src/api/, tests scattered with .test.tsx. Want conventions auto-apply based on file. Best approach?",
+      "options": {
+        "A": "All conventions in root CLAUDE.md with section headers.",
+        "B": "Rule files in .claude/rules/ with YAML frontmatter glob patterns conditionally applying conventions based on file paths.",
+        "C": "Manually invoked skill at session start.",
+        "D": "Separate CLAUDE.md per directory."
+      },
+      "correctAnswer": "B",
+      "explanation": ".claude/rules/ con glob = automatic + deterministic by file path. Cross-cutting concerns (test files anywhere) gestibili.",
+      "tags": [
+        "rules-glob",
+        "path-specific"
+      ]
+    },
+    {
+      "id": "Q077",
+      "domain": "Claude Code Configuration",
+      "scenario": "Code Generation",
+      "subdomain": "Skills vs CLAUDE.md Scope",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "CLAUDE.md 400+ lines: coding standards, testing conventions, PR review checklist, deployment workflow, migration procedures. Want coding/testing always followed, PR/deployment/migration only when relevant. Best restructuring?",
+      "options": {
+        "A": "Keep all with @import syntax.",
+        "B": "Split into .claude/rules/ with glob patterns.",
+        "C": "Move all into Skills, brief description in CLAUDE.md.",
+        "D": "Keep universal standards in CLAUDE.md, create Skills for task-specific workflows (PR reviews, deployments, migrations) with trigger keywords."
+      },
+      "correctAnswer": "D",
+      "explanation": "CLAUDE.md = always-loaded universal. Skills = on-demand task-specific via trigger keywords. Each mechanism for appropriate scope.",
+      "tags": [
+        "claude-vs-skills",
+        "scope-mapping"
+      ]
+    },
+    {
+      "id": "Q078",
+      "domain": "Claude Code Configuration",
+      "scenario": "Code Generation",
+      "subdomain": "CLAUDE.md Configuration Hierarchy",
+      "difficulty": "hard",
+      "source": "Practice Exam",
+      "question": "Team uses Claude Code for months. Three devs report Claude follows 'always include comprehensive error handling'. Fourth (new joiner) reports Claude isn't following. All same repo, latest pulled. Most likely cause and fix?",
+      "options": {
+        "A": "Guideline in original devs' ~/.claude/CLAUDE.md (user-level), not project's. Move to project-level so all team receive it.",
+        "B": "Claude builds per-user preference models; new dev needs to specify repeatedly.",
+        "C": "Claude Code caches CLAUDE.md; clear cache.",
+        "D": "New dev's ~/.claude/CLAUDE.md has conflicting instructions; remove conflict."
+      },
+      "correctAnswer": "A",
+      "explanation": "Onboarding tribale dei 3 original (user-level copied tra loro). Nuovo dev manca user-level config. Project-level guarantee per future devs. Fix preventiva.",
+      "tags": [
+        "config-hierarchy",
+        "preventive-fix"
+      ]
+    },
+    {
+      "id": "Q079",
+      "domain": "Claude Code Configuration",
+      "scenario": "Code Generation",
+      "subdomain": "Custom Slash Commands",
+      "difficulty": "easy",
+      "source": "Practice Exam",
+      "question": "/commit skill in .claude/skills/commit/SKILL.md used by team. Developer wants personal version with different format. Best approach?",
+      "options": {
+        "A": "Configuration variable in project skill.",
+        "B": "Override project skill locally.",
+        "C": "Personal version in ~/.claude/skills/ with different name like /my-commit.",
+        "D": "Modify team skill to support multiple formats."
+      },
+      "correctAnswer": "C",
+      "explanation": "Project skill precedence over personal con stesso nome. Different nome (/my-commit) per coexist.",
+      "tags": [
+        "skill-precedence",
+        "naming"
+      ]
+    },
+    {
+      "id": "Q080",
+      "domain": "Claude Code Configuration",
+      "scenario": "Code Generation",
+      "subdomain": "Custom Slash Commands",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Including 2-3 full exemplar endpoint implementations as context produces consistent results when generating endpoints, but context overhead wasteful for bug fixes or unrelated work. Structure?",
+      "options": {
+        "A": "Exemplars in CLAUDE.md with comments indicating when.",
+        "B": "Create skill referencing exemplar endpoints with pattern-following instructions, invoked on-demand via slash command.",
+        "C": "Exemplars in .claude/rules/ with glob endpoint files.",
+        "D": "Move exemplars to project documentation."
+      },
+      "correctAnswer": "B",
+      "explanation": "Skill on-demand = context loaded solo quando generating endpoints. Bug fixes non vedono overhead. Task-specific.",
+      "tags": [
+        "skill-on-demand",
+        "task-context"
+      ]
+    },
+    {
+      "id": "Q081",
+      "domain": "Claude Code Configuration",
+      "scenario": "Code Generation",
+      "subdomain": "Subagent Delegation Strategy",
+      "difficulty": "hard",
+      "source": "Practice Exam",
+      "question": "Adding error handling wrappers to external API calls across 120-file codebase. Phases: (1) discover call sites (verbose), (2) design wrapper pattern, (3) apply consistently. Phase 1 output could pollute later phases. Best approach?",
+      "options": {
+        "A": "All phases in main conversation with /clear.",
+        "B": "Use Explore subagent for Phase 1 to isolate verbose discovery, return summary, continue Phases 2-3 in main.",
+        "C": "Three separate sessions.",
+        "D": "Plan mode for all phases."
+      },
+      "correctAnswer": "B",
+      "explanation": "Explore subagent isola verbose discovery, ritorna summary. Preserves main context per collaborative design e consistent implementation.",
+      "tags": [
+        "explore-subagent",
+        "context-preservation"
+      ]
+    },
+    {
+      "id": "Q082",
+      "domain": "Claude Code Configuration",
+      "scenario": "Code Generation",
+      "subdomain": "Plan Mode vs Direct Execution",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Assigned to restructure monolith into microservices. Changes across dozens of files, careful service boundary design needed. Approach?",
+      "options": {
+        "A": "Start making changes immediately.",
+        "B": "Enter plan mode to explore codebase, understand dependencies, design implementation approach before changes.",
+        "C": "Brief plan in text, then execute.",
+        "D": "One service at a time without planning."
+      },
+      "correctAnswer": "B",
+      "explanation": "Plan mode = safe exploration + informed decisions prima di committed changes. Architectural restructuring = ideal plan mode.",
+      "tags": [
+        "plan-mode",
+        "architectural"
+      ]
+    },
+    {
+      "id": "Q083",
+      "domain": "Claude Code Configuration",
+      "scenario": "Code Generation",
+      "subdomain": "Custom Slash Commands",
+      "difficulty": "easy",
+      "source": "Practice Exam",
+      "question": "Custom /review slash command for team's PR review. Where should it live?",
+      "options": {
+        "A": "~/.claude/commands/ (user-level).",
+        "B": "Personal dotfiles repo.",
+        "C": "CLAUDE.md as text.",
+        "D": ".claude/commands/ directory in project repo."
+      },
+      "correctAnswer": "D",
+      "explanation": ".claude/commands/ project-scoped = version-controlled, automatic per ogni dev. Designated location for project commands.",
+      "tags": [
+        "project-commands",
+        "version-controlled"
+      ]
+    },
+    {
+      "id": "Q084",
+      "domain": "Claude Code Configuration",
+      "scenario": "Code Generation",
+      "subdomain": "Custom Slash Commands",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "/analyze-codebase skill performs comprehensive analysis. Verbose output (diagrams, dependency graphs, summaries) overwhelms main conversation. Preserve capability without polluting main?",
+      "options": {
+        "A": "Truncate skill output.",
+        "B": "Add context: fork to skill frontmatter to run in isolated sub-agent context.",
+        "C": "Save analysis to file, agent references it.",
+        "D": "Separate Claude Code instance."
+      },
+      "correctAnswer": "B",
+      "explanation": "context: fork = isolated sub-agent context. Verbose output non pollutes main context window. Preserves full analysis capability.",
+      "tags": [
+        "context-fork",
+        "isolation"
+      ]
+    },
+    {
+      "id": "Q085",
+      "domain": "Claude Code Configuration",
+      "scenario": "Code Generation",
+      "subdomain": "Plan Mode vs Direct Execution",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Add Slack as notification channel. Existing codebase has custom abstractions for email/SMS. Multiple integration approaches (webhooks, bot tokens, Slack Apps) with different trade-offs. Best approach?",
+      "options": {
+        "A": "Implement with webhooks first.",
+        "B": "Enter plan mode to explore integration options, architectural implications, present recommendation before implementing.",
+        "C": "Ask team which approach.",
+        "D": "Implement all three, let users choose."
+      },
+      "correctAnswer": "B",
+      "explanation": "Multiple valid approaches con diverse architectural implications + ambiguous requirements = plan mode. Explore trade-offs prima.",
+      "tags": [
+        "plan-mode",
+        "ambiguous-requirements"
+      ]
+    },
+    {
+      "id": "Q086",
+      "domain": "Claude Code Configuration",
+      "scenario": "CI/CD",
+      "subdomain": "CI/CD Integration",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "CI pipeline runs Claude Code review. Want Claude limited to read-only operations (no Edit, Write, Bash). Best approach?",
+      "options": {
+        "A": "Explicit instructions in CLAUDE.md prohibiting modifications.",
+        "B": "Configure permissions in .claude/settings.json with permissions.allow restricted to Read, Grep, Glob only.",
+        "C": "Sandboxed container.",
+        "D": "PreToolUse hook blocking writes."
+      },
+      "correctAnswer": "B",
+      "explanation": "Permission config in settings.json = built-in canonical, project-scoped, deterministic. Allow list restricts to read-only.",
+      "tags": [
+        "permissions-config",
+        "settings-json"
+      ]
+    },
+    {
+      "id": "Q087",
+      "domain": "Claude Code Configuration",
+      "scenario": "Code Generation",
+      "subdomain": "Built-in Tools",
+      "difficulty": "easy",
+      "source": "Original",
+      "question": "Developer asks Claude to find all callers of function processOrder. Which tool first?",
+      "options": {
+        "A": "Glob with pattern *.py.",
+        "B": "Grep searching for 'processOrder' content.",
+        "C": "Read every file in src/.",
+        "D": "Bash with grep command."
+      },
+      "correctAnswer": "B",
+      "explanation": "Grep = content search in files (function names, error messages). Glob = path/extension matching. Read = post-Grep su trovati.",
+      "tags": [
+        "grep-content",
+        "built-in-tools"
+      ]
+    },
+    {
+      "id": "Q088",
+      "domain": "Claude Code Configuration",
+      "scenario": "Code Generation",
+      "subdomain": "Built-in Tools",
+      "difficulty": "easy",
+      "source": "Original",
+      "question": "Developer asks Claude to find all React test files (.test.tsx) across codebase. Which tool?",
+      "options": {
+        "A": "Grep searching 'test' content.",
+        "B": "Glob with pattern **/*.test.tsx.",
+        "C": "Bash with find.",
+        "D": "Read files to check naming."
+      },
+      "correctAnswer": "B",
+      "explanation": "Path/extension pattern = Glob. Grep searches contents.",
+      "tags": [
+        "glob-pattern",
+        "file-finding"
+      ]
+    },
+    {
+      "id": "Q089",
+      "domain": "Claude Code Configuration",
+      "scenario": "Code Generation",
+      "subdomain": "Built-in Tools",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Claude attempts Edit on user_service.py to rename 'getUser' to 'get_user', fails with 'no unique match' because 'getUser' appears in multiple unrelated contexts. Best fallback?",
+      "options": {
+        "A": "Try Edit with more context.",
+        "B": "Read entire file, then Write complete updated version.",
+        "C": "Bash with sed.",
+        "D": "Glob to find similar patterns elsewhere."
+      },
+      "correctAnswer": "B",
+      "explanation": "Pattern Edit fallback canonical: Read intero file + Write versione completa. Documentato esplicitamente.",
+      "tags": [
+        "edit-fallback",
+        "read-write"
+      ]
+    },
+    {
+      "id": "Q090",
+      "domain": "Claude Code Configuration",
+      "scenario": "Code Generation",
+      "subdomain": "Built-in Tools",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Developer asks Claude to understand legacy codebase of 200 files. Best exploration strategy?",
+      "options": {
+        "A": "Read every file sequentially.",
+        "B": "Glob to enumerate, then Read all matching.",
+        "C": "Start with Grep for known entry points (main, app.py, index.ts), then Read found files to understand, follow imports incrementally.",
+        "D": "Ask developer for guided tour."
+      },
+      "correctAnswer": "C",
+      "explanation": "Incremental exploration: Grep entry points + Read selectively + follow imports. Pattern canonical legacy exploration.",
+      "tags": [
+        "incremental-exploration",
+        "entry-points"
+      ]
+    },
+    {
+      "id": "Q091",
+      "domain": "Claude Code Configuration",
+      "scenario": "Code Generation",
+      "subdomain": "Plan Mode vs Direct Execution",
+      "difficulty": "easy",
+      "source": "Original",
+      "question": "Developer asks 'fix typo in line 47 of main.py where pront should be print'. How should Claude approach?",
+      "options": {
+        "A": "Enter plan mode.",
+        "B": "Direct execution: Edit main.py to fix typo.",
+        "C": "Read entire file, then Write update.",
+        "D": "Ask developer for scope clarification."
+      },
+      "correctAnswer": "B",
+      "explanation": "Change well-defined, scope clear, no ambiguity = direct execution. Plan mode per architectural decisions.",
+      "tags": [
+        "direct-execution",
+        "well-defined"
+      ]
+    },
+    {
+      "id": "Q092",
+      "domain": "Claude Code Configuration",
+      "scenario": "Code Generation",
+      "subdomain": "Plan Mode vs Direct Execution",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Developer task: 'add input validation to login endpoint to prevent SQL injection'. Single file, well-known security pattern. Best approach?",
+      "options": {
+        "A": "Enter plan mode for exploration.",
+        "B": "Direct execution: read login file, implement parameterized queries.",
+        "C": "Use /explore-alternatives skill.",
+        "D": "Ask developer for pattern reference."
+      },
+      "correctAnswer": "B",
+      "explanation": "Well-known pattern, single file, clear scope = direct execution.",
+      "tags": [
+        "direct-execution",
+        "single-file"
+      ]
+    },
+    {
+      "id": "Q093",
+      "domain": "Claude Code Configuration",
+      "scenario": "Code Generation",
+      "subdomain": "CLAUDE.md Configuration Hierarchy",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Developer uses Claude Code across projects. Personal preferences in ~/.claude/CLAUDE.md (verbose comments). Some projects have project .claude/CLAUDE.md (terse comments). For specific project, which apply?",
+      "options": {
+        "A": "User-level overrides project always.",
+        "B": "Project overrides user for specific conventions defined in both; user applies for conventions not in project file.",
+        "C": "Only project applies.",
+        "D": "Developer picks one."
+      },
+      "correctAnswer": "B",
+      "explanation": "Hierarchy: project-level overrides user-level per conventions specified in entrambi. User-level applies per non-overridden.",
+      "tags": [
+        "hierarchy-rules",
+        "layered-config"
+      ]
+    },
+    {
+      "id": "Q094",
+      "domain": "Claude Code Configuration",
+      "scenario": "Code Generation",
+      "subdomain": "Custom Slash Commands",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Team uses /test-and-fix skill. Needs Bash (tests), Read (output), Edit (fix). Concern: skill could run dangerous Bash like 'rm -rf'. Best mitigation?",
+      "options": {
+        "A": "Prompt instruction forbidding destructive Bash.",
+        "B": "Configure with allowed-tools: [Bash, Read, Edit] + deny rule in settings.json for dangerous Bash patterns.",
+        "C": "Container with restricted filesystem.",
+        "D": "Remove Bash entirely."
+      },
+      "correctAnswer": "B",
+      "explanation": "Allowed-tools gives capability needed, deny rule blocks dangerous patterns. Defense in depth. Deny vince su allow.",
+      "tags": [
+        "allow-deny",
+        "defense-depth"
+      ]
+    },
+    {
+      "id": "Q095",
+      "domain": "Claude Code Configuration",
+      "scenario": "Code Generation",
+      "subdomain": "Custom Slash Commands",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "/release skill: runs tests, generates changelog, bumps version, creates tag. Each can fail. Want halt on first failure with status. Best design?",
+      "options": {
+        "A": "Single skill with internal error handling.",
+        "B": "Skill executes steps as separate tool calls, checks results between steps, halts and reports if any fails.",
+        "C": "Skills per step, developer sequential invocation.",
+        "D": "PostToolUse hook monitoring."
+      },
+      "correctAnswer": "B",
+      "explanation": "Steps as separate tool calls + result check + conditional continuation = sequential pipeline with failure handling.",
+      "tags": [
+        "sequential-pipeline",
+        "failure-handling"
+      ]
+    },
+    {
+      "id": "Q096",
+      "domain": "Claude Code Configuration",
+      "scenario": "Code Generation",
+      "subdomain": "Path-Specific Rule Configuration",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Project has Python files in src/ and TypeScript in client/. Want Python conventions (PEP 8, docstrings) for .py, TypeScript conventions for .ts/.tsx. Best?",
+      "options": {
+        "A": "Two CLAUDE.md in src/ and client/.",
+        "B": "Single root CLAUDE.md with both.",
+        "C": "Two files in .claude/rules/: python.md with glob src/**/*.py + typescript.md with glob client/**/*.{ts,tsx}.",
+        "D": "Skills per language invoked manually."
+      },
+      "correctAnswer": "C",
+      "explanation": ".claude/rules/ con file-type glob patterns = canonical path-specific config. Auto-applies based on file.",
+      "tags": [
+        "file-type-glob",
+        "path-config"
+      ]
+    },
+    {
+      "id": "Q097",
+      "domain": "Claude Code Configuration",
+      "scenario": "Code Generation",
+      "subdomain": "Skills vs CLAUDE.md Scope",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Team uses Claude Code. Conventions: TypeScript style (always), React component structure (only for components/), commit format (only when committing). Where each?",
+      "options": {
+        "A": "All in CLAUDE.md.",
+        "B": "TypeScript style in CLAUDE.md (always), React in .claude/rules/ with glob components/**, commit format in /commit Skill.",
+        "C": "All in Skills.",
+        "D": "All in .claude/rules/."
+      },
+      "correctAnswer": "B",
+      "explanation": "Three layers per three contexts: always-loaded (CLAUDE.md) + path-specific (rules glob) + task-specific (Skills trigger).",
+      "tags": [
+        "three-layers",
+        "context-mapping"
+      ]
+    },
+    {
+      "id": "Q098",
+      "domain": "Claude Code Configuration",
+      "scenario": "Code Generation",
+      "subdomain": "Custom Slash Commands",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Building /data-migration skill: (1) read schema files, (2) generate migration files, (3) avoid destructive ops without confirmation, (4) isolate analysis from main context, (5) prevent accidental Bash to production DB. Best configuration?",
+      "options": {
+        "A": "argument-hint + context: fork + allowed-tools [Read, Write, Edit] + rely on prompt instructions for destructive prevention.",
+        "B": "context: fork + allowed-tools [Read, Write, Edit, Bash] + PreToolUse hook deny-list + prompt instructions.",
+        "C": "argument-hint + context: fork + allowed-tools [Read, Write, Edit] excluding Bash + prompt-level confirmation for DROP COLUMN.",
+        "D": "Split into /migration-create and /migration-execute with different allowed-tools."
+      },
+      "correctAnswer": "C",
+      "explanation": "Req 5 (prevent Bash to prod): capability removal escludere Bash > filtering via hook. Req 3 (confirmation): procedural step esplicito. Req 4: context: fork.",
+      "tags": [
+        "capability-removal",
+        "skill-design"
+      ]
+    },
+    {
+      "id": "Q099",
+      "domain": "Claude Code Configuration",
+      "scenario": "Customer Support",
+      "subdomain": "Multi-step Workflow Enforcement",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Data engineering team uses Claude Code. Security requires no Bash to production data warehouse (Snowflake prod_warehouse). Developers report Claude attempting `snowsql -a prod_warehouse -q '...'`. Each time developer denies. Concern about misclick. Most effective enforcement?",
+      "options": {
+        "A": "CLAUDE.md instruction never to connect to prod_warehouse.",
+        "B": "Bash deny rule in .claude/settings.json: Bash(snowsql*prod_warehouse*) automatically rejected.",
+        "C": "PreToolUse hook parsing Bash for prod_warehouse references.",
+        "D": "allowed-tools excluding Bash entirely."
+      },
+      "correctAnswer": "B",
+      "explanation": "Hard security req + deny rule in settings.json = built-in canonical, deterministic, project-scoped. Deny vince. D capability removal eccessiva.",
+      "tags": [
+        "deny-rule",
+        "settings-canonical"
+      ]
+    },
+    {
+      "id": "Q100",
+      "domain": "Claude Code Configuration",
+      "scenario": "CI/CD",
+      "subdomain": "CI/CD Integration",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "CI pipeline runs Claude Code review. Pipeline must fail if Claude reports critical security issues. How to wire?",
+      "options": {
+        "A": "Parse text output for 'critical' keywords.",
+        "B": "Use --output-format json with schema requiring severity field; pipeline script checks severity and exits 1 if critical.",
+        "C": "Claude exits non-zero on critical.",
+        "D": "Run Claude twice and compare."
+      },
+      "correctAnswer": "B",
+      "explanation": "Structured JSON + schema + script validation = deterministic CI integration.",
+      "tags": [
+        "structured-ci",
+        "json-schema"
+      ]
+    },
+    {
+      "id": "Q101",
+      "domain": "Prompt Engineering",
+      "scenario": "Code Generation",
+      "subdomain": "Iterative Refinement",
+      "difficulty": "medium",
+      "source": "Practice Exam",
+      "question": "Asked Claude to implement function transforming API responses to internal schema. Despite detailed prose description with nested objects and timestamps, code misinterprets mapping. 3 iterations of clarification still issues. Most effective?",
+      "options": {
+        "A": "Switch to more capable model.",
+        "B": "Provide 2-3 concrete input-output examples showing expected transformation.",
+        "C": "JSON schema defining expected output, validate after each iteration.",
+        "D": "Break into smaller helper functions."
+      },
+      "correctAnswer": "B",
+      "explanation": "Prose description = ambiguous. Concrete input-output examples = unambiguous, shows exactly transformation. Addresses interpretation root cause.",
+      "tags": [
+        "concrete-examples",
+        "iterative"
+      ]
+    },
+    {
+      "id": "Q102",
+      "domain": "Prompt Engineering",
+      "scenario": "Document Processing",
+      "subdomain": "Structured Output",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Agent extracts data from receipts via tool_use with JSON schema. total_amount required number. When receipt unclear/damaged and amount cannot be determined, agent fills guessed values. Want explicit signal of inability. Best?",
+      "options": {
+        "A": "Make total_amount nullable + instruct return null when unclear.",
+        "B": "Separate boolean 'amount_uncertain' field.",
+        "C": "confidence_score field for each numeric.",
+        "D": "Post-processing validation comparing against expected ranges."
+      },
+      "correctAnswer": "A",
+      "explanation": "Nullable + instruction = canonical. Required forces fabrication. Schema-level fix risolve incentive. B duplicates info.",
+      "tags": [
+        "nullable",
+        "schema-level"
+      ]
+    },
+    {
+      "id": "Q103",
+      "domain": "Prompt Engineering",
+      "scenario": "Document Processing",
+      "subdomain": "Structured Output",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Tax document extraction. Schema includes 'spouse_ssn'. Single-filer documents (no spouse) cause agent to fabricate SSNs. Best fix?",
+      "options": {
+        "A": "Prose instructions about single-filer.",
+        "B": "Make spouse_ssn nullable + instruct: 'Return null if not present (single filer).'",
+        "C": "Validation detecting fake SSNs.",
+        "D": "Few-shot single-filer extraction."
+      },
+      "correctAnswer": "B",
+      "explanation": "Required field forces fabrication. Nullable + null instruction = explicit absence acknowledgment.",
+      "tags": [
+        "nullable-prevent-hallucination"
+      ]
+    },
+    {
+      "id": "Q104",
+      "domain": "Prompt Engineering",
+      "scenario": "Document Processing",
+      "subdomain": "Structured Output",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Agent extracts purchase orders. Schema: vendor (string), items (array of {name, qty, price}), total (number). Sometimes items missing qty or price. Schema requires both. Most reliable fix?",
+      "options": {
+        "A": "Instructions to skip incomplete items.",
+        "B": "Modify item schema: qty and price nullable + instruct null when not stated.",
+        "C": "Validation filtering incomplete.",
+        "D": "Few-shot handling incomplete data."
+      },
+      "correctAnswer": "B",
+      "explanation": "Pattern canonical: required forces fabrication. Nullable + null instruction = explicit absence.",
+      "tags": [
+        "nullable",
+        "required-forces"
+      ]
+    },
+    {
+      "id": "Q105",
+      "domain": "Prompt Engineering",
+      "scenario": "Document Processing",
+      "subdomain": "Structured Output",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Resume parsing. Schema: {name, email, experience: array of {company, role, dates}}. Sometimes experience entries have role but missing company. Schema requires company. Best fix?",
+      "options": {
+        "A": "Prose instructions to skip incomplete.",
+        "B": "Make company nullable + instruct null when not stated.",
+        "C": "Post-extraction filter incomplete entries.",
+        "D": "Few-shot incomplete data."
+      },
+      "correctAnswer": "B",
+      "explanation": "Required field forces fabrication. Nullable + null instruction = explicit absence pattern.",
+      "tags": [
+        "nullable",
+        "required-forces"
+      ]
+    },
+    {
+      "id": "Q106",
+      "domain": "Prompt Engineering",
+      "scenario": "Customer Support",
+      "subdomain": "Tool Selection Reliability",
+      "difficulty": "hard",
+      "source": "Practice Exam (Hard)",
+      "question": "Standard refunds processed correctly 94%. When customer's order involves cryptocurrency payments, agent suggests 'consult specialized team' 81% even though policy explicitly allows standard refund for crypto under $1000. Tool descriptions and policy clear. Most likely cause?",
+      "options": {
+        "A": "Model training creates cautious associations with crypto transactions, overriding explicit policy.",
+        "B": "System prompt has keyword-sensitive instructions for cryptocurrency terms.",
+        "C": "process_refund description lacks crypto-specific handling.",
+        "D": "Required few-shot examples for crypto missing."
+      },
+      "correctAnswer": "A",
+      "explanation": "Attributo intrinseco (crypto) + prompt clear + conservative behavior = training prior. Bias appreso su 'crypto = risky' override policy.",
+      "tags": [
+        "training-prior",
+        "intrinsic-attribute"
+      ]
+    },
+    {
+      "id": "Q107",
+      "domain": "Prompt Engineering",
+      "scenario": "Customer Support",
+      "subdomain": "Tool Selection Reliability",
+      "difficulty": "hard",
+      "source": "Original",
+      "question": "Customer support agent: with single customer mentioned 96% accuracy. With multiple orders in one message ('my orders from last week have issues'): lookup_order called only 41%, often calls get_customer and asking for clarification. Tool descriptions distinguish single-order vs multi-order clearly. Most likely cause?",
+      "options": {
+        "A": "Training creates bias toward customer-level operations when order references are ambiguous or plural.",
+        "B": "System prompt lacks explicit guidance for multi-order scenarios, causing default fallback to customer lookup.",
+        "C": "lookup_order description doesn't handle multi-order use case.",
+        "D": "Tool selection naturally degrades with multiple entities."
+      },
+      "correctAnswer": "B",
+      "explanation": "Asking for clarification + wrong tool = esitazione tipica di guidance gap. Single-order coperto (96%), multi-order non specificato nel prompt. Tool descriptions distinguish (elimina C).",
+      "tags": [
+        "guidance-gap",
+        "prompt-missing"
+      ]
+    },
+    {
+      "id": "Q108",
+      "domain": "Prompt Engineering",
+      "scenario": "Customer Support",
+      "subdomain": "Tool Selection Reliability",
+      "difficulty": "hard",
+      "source": "Original",
+      "question": "Support agent: refunds under $50 96% accuracy, $50-$200 88%, over $200 calls verify_purchase_history 73% even when not required by policy. Policy: verify only when order >90 days OR refund >$500. Tool descriptions and prompt clearly state. Most likely cause?",
+      "options": {
+        "A": "Training creates conservative associations between higher monetary values and verification, overriding explicit policy.",
+        "B": "Conditional logic too complex for reliable interpretation.",
+        "C": "verify_purchase_history description has semantic association with higher value.",
+        "D": "Required few-shot for refunds $200-$500 missing to anchor pattern."
+      },
+      "correctAnswer": "A",
+      "explanation": "Attributo intrinseco (importo) + prompt clear + conservative behavior systematic = training prior. Bias 'high-value transactions = caution'.",
+      "tags": [
+        "training-prior",
+        "monetary-attribute"
+      ]
+    },
+    {
+      "id": "Q109",
+      "domain": "Prompt Engineering",
+      "scenario": "Customer Support",
+      "subdomain": "Tool Selection Reliability",
+      "difficulty": "hard",
+      "source": "Original",
+      "question": "Support agent: When customers mention 'subscription' in messages, agent calls get_billing_info 81% of time. Without 'subscription', calls lookup_account 89%. Tool descriptions clear. Most likely cause?",
+      "options": {
+        "A": "Model training associates 'subscription' with billing.",
+        "B": "System prompt has keyword-sensitive instruction for 'subscription'.",
+        "C": "get_billing_info description mentions subscriptions.",
+        "D": "Customers using 'subscription' are likely asking billing questions, so correct."
+      },
+      "correctAnswer": "B",
+      "explanation": "Keyword in user message + systematic binary variation (81/89) + descriptions clear = explicit routing logic in system prompt. Pattern identico al 'account' practice exam.",
+      "tags": [
+        "prompt-routing",
+        "keyword-trigger"
+      ]
+    },
+    {
+      "id": "Q110",
+      "domain": "Prompt Engineering",
+      "scenario": "Document Processing",
+      "subdomain": "Few-Shot Prompting",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Medical records summarization agent: 92% routine accuracy (cold, flu). When notes involve rare conditions (Ehlers-Danlos, Behçet's), agent misclassifies severity or omits follow-up. Rare conditions accuracy: 51%. System prompt has 3 examples of routine. Best fix?",
+      "options": {
+        "A": "Medical reference database via retrieval.",
+        "B": "Add 3-4 few-shot examples covering rare condition cases with correct severity and follow-up reasoning.",
+        "C": "Modify summarize tool to require severity field.",
+        "D": "Higher-tier model for rare cases."
+      },
+      "correctAnswer": "B",
+      "explanation": "92% routine = capability funziona. 51% rare = pattern recognition gap su categoria non coperta. Few-shot extends pattern coverage.",
+      "tags": [
+        "few-shot",
+        "category-extension"
+      ]
+    },
+    {
+      "id": "Q111",
+      "domain": "Prompt Engineering",
+      "scenario": "CI/CD",
+      "subdomain": "Few-Shot Prompting",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Bug triage agent: 88% accuracy stable for 6 months. After 4 new microservices launch, accuracy on new service reports drops to 52%, existing remains 87%. Agent misassigns team or misreads severity. System prompt has general criteria + 4 worked examples (existing services). Best fix?",
+      "options": {
+        "A": "Expand prompt with descriptions of 4 new microservices.",
+        "B": "Add 4 few-shot examples covering new microservices with correct team and severity reasoning.",
+        "C": "Separate classification model with service-team mapping.",
+        "D": "Retrieval: service ownership database with dynamic retrieval."
+      },
+      "correctAnswer": "B",
+      "explanation": "87% existing = capability funziona. 52% new = pattern recognition gap. Few-shot teaches pattern compositivo. Declarative description sub-ottimale.",
+      "tags": [
+        "few-shot",
+        "new-category"
+      ]
+    },
+    {
+      "id": "Q112",
+      "domain": "Prompt Engineering",
+      "scenario": "Customer Support",
+      "subdomain": "Tool Selection Reliability",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "IT support agent: tickets with explicit urgency keywords ('urgent', 'blocking') escalates 87% (appropriate). Without urgency keywords but production-impacting using neutral language ('deployment pipeline returning errors', 'users can't log in'): escalates only 34% (should be ~75%). System prompt mentions production-impacting. Best fix?",
+      "options": {
+        "A": "Expand criteria with explicit definitions of production-impacting.",
+        "B": "Add few-shot showing 4-5 production-impacting tickets in neutral language being escalated with reasoning.",
+        "C": "Modify escalate_to_engineer description.",
+        "D": "Preprocessing step classifies impact level."
+      },
+      "correctAnswer": "B",
+      "explanation": "87% explicit = capability funziona. 34% neutral = pattern recognition gap. Few-shot teaches pattern compositivo (neutral language + production system = impact).",
+      "tags": [
+        "few-shot",
+        "neutral-language"
+      ]
+    },
+    {
+      "id": "Q113",
+      "domain": "Prompt Engineering",
+      "scenario": "Customer Support",
+      "subdomain": "Few-Shot Prompting",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Customer support agent: 96% accuracy on requests with single explicit customer. 58% on family-account requests ('my husband's account', 'order under my wife's email') without explicit names. Tool descriptions clear. System prompt mentions family accounts but no examples. Best fix?",
+      "options": {
+        "A": "Explicit rules for family-account scenarios in prompt.",
+        "B": "Add 3-4 few-shot examples showing family-account refund processed with proper identification.",
+        "C": "process_refund requires explicit customer confirmation when family-account language detected.",
+        "D": "Preprocessing extracts customer name from family-account references."
+      },
+      "correctAnswer": "B",
+      "explanation": "96% single = capability. 58% family = pattern recognition gap su variante linguistica. Few-shot canonical per teaching linguistic variations.",
+      "tags": [
+        "few-shot",
+        "linguistic-variation"
+      ]
+    },
+    {
+      "id": "Q114",
+      "domain": "Prompt Engineering",
+      "scenario": "Multi-Agent Research",
+      "subdomain": "Few-Shot Prompting",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Research agent produces literature reviews. Citations placed at end of paragraphs rather than at specific claims. Paragraph might have 4 claims with all 4 citations at end. Editorial team requires inline citations immediately after each claim. Best approach?",
+      "options": {
+        "A": "System prompt instruction: 'Place citation immediately after each claim.'",
+        "B": "Add 3-4 few-shot examples showing paragraphs with proper inline citation placement.",
+        "C": "Modify extract_key_findings to return claim-source pairings, update compose_review.",
+        "D": "Post-composition validation parsing for violations."
+      },
+      "correctAnswer": "B",
+      "explanation": "Problem = format/structure, capability esiste, info esiste. Few-shot shows desired pattern (claim-cite-claim-cite). Format consistency = few-shot canonical.",
+      "tags": [
+        "few-shot-format",
+        "structure"
+      ]
+    },
+    {
+      "id": "Q115",
+      "domain": "Prompt Engineering",
+      "scenario": "Document Processing",
+      "subdomain": "Test-Driven Iteration",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Developer asks Claude to implement complex date parsing function handling multiple formats (ISO, US, EU, 'last Tuesday'). Standard prose proved insufficient (3 iterations). Best approach?",
+      "options": {
+        "A": "Provide comprehensive test suite first, iterate by sharing failures.",
+        "B": "More detailed prose with edge cases.",
+        "C": "Decompose into separate parsers per format.",
+        "D": "Higher-tier model."
+      },
+      "correctAnswer": "A",
+      "explanation": "Test-driven iteration: tests first + share failures = progressive improvement guided by concrete failures. Pattern canonical per complex implementations.",
+      "tags": [
+        "test-driven",
+        "iteration"
+      ]
+    },
+    {
+      "id": "Q116",
+      "domain": "Prompt Engineering",
+      "scenario": "Document Processing",
+      "subdomain": "Iterative Refinement",
+      "difficulty": "easy",
+      "source": "Original",
+      "question": "Developer asks Claude to implement function. Description: 'function should be efficient, well-documented, follow team conventions.' Vague. Best approach?",
+      "options": {
+        "A": "Implement based on common conventions.",
+        "B": "Claude asks clarifying questions about specifics.",
+        "C": "Implement multiple variants, let developer choose.",
+        "D": "Refuse until specifications provided."
+      },
+      "correctAnswer": "B",
+      "explanation": "Interview pattern: Claude asks questions to surface considerations. Canonical per ambiguous requirements.",
+      "tags": [
+        "interview-pattern",
+        "clarification"
+      ]
+    },
+    {
+      "id": "Q117",
+      "domain": "Prompt Engineering",
+      "scenario": "Document Processing",
+      "subdomain": "Iterative Refinement",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Developer asks Claude to implement complex parsing for log entries (JSON or plain text, extracting timestamp, severity, message, optional structured fields). Implementation works for clear cases but fails on edge cases. 4 iterations of prose clarification still issues. Best approach?",
+      "options": {
+        "A": "Provide 4-5 concrete input-output examples covering edge cases (JSON, plain text, missing severity, malformed).",
+        "B": "More detailed prose with edge cases.",
+        "C": "Switch to more capable model.",
+        "D": "Decompose into separate JSON + plain text parsers."
+      },
+      "correctAnswer": "A",
+      "explanation": "Prose ambiguous after iterations. Concrete input-output examples covering edge cases = unambiguous teaching.",
+      "tags": [
+        "concrete-examples",
+        "edge-cases"
+      ]
+    },
+    {
+      "id": "Q118",
+      "domain": "Prompt Engineering",
+      "scenario": "Customer Support",
+      "subdomain": "Escalation Decisions",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Support agent's escalation rate too high (45%, target 15%). Investigation: over-cautious escalation of routine cases. System prompt has general criteria. Best fix?",
+      "options": {
+        "A": "Lower confidence threshold.",
+        "B": "Add explicit escalation criteria + 4-6 few-shot examples showing both 'escalate' and 'resolve autonomously' with reasoning.",
+        "C": "Higher-tier model.",
+        "D": "Force resolution attempt before escalation."
+      },
+      "correctAnswer": "B",
+      "explanation": "Explicit criteria + few-shot showing both decisions with reasoning = teach decision-making. Shows what to escalate AND what to resolve.",
+      "tags": [
+        "decision-boundary",
+        "few-shot-both"
+      ]
+    },
+    {
+      "id": "Q119",
+      "domain": "Prompt Engineering",
+      "scenario": "Customer Support",
+      "subdomain": "Escalation Decisions",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Refund agent: policy allows automatic refunds <$500. Production data: agent escalates 73% in $400-$499 range despite policy. Tool descriptions and policy clear. Most likely cause?",
+      "options": {
+        "A": "Training prior conservative bias near threshold values.",
+        "B": "System prompt has older approval threshold conflicting.",
+        "C": "Tool description lacks specific guidance near threshold.",
+        "D": "System prompt has keyword-sensitive routing on '$'."
+      },
+      "correctAnswer": "A",
+      "explanation": "Attributo intrinseco (amount near threshold) + policy clear + conservative systematic = training prior. Modello bias 'high-value approaching threshold = caution'.",
+      "tags": [
+        "training-prior",
+        "threshold-bias"
+      ]
+    },
+    {
+      "id": "Q120",
+      "domain": "Prompt Engineering",
+      "scenario": "CI/CD",
+      "subdomain": "Classification Consistency",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Code review classifies issues as security/performance/maintainability/style. Similar issues sometimes classified differently across runs. Most effective fix?",
+      "options": {
+        "A": "Temperature=0.",
+        "B": "Add classification rubric with concrete code examples per category.",
+        "C": "Higher-tier model.",
+        "D": "Multiple instances vote."
+      },
+      "correctAnswer": "B",
+      "explanation": "Concrete code examples per category = clear reference points. Removes ambiguity systematically.",
+      "tags": [
+        "explicit-criteria",
+        "rubric"
+      ]
+    },
+    {
+      "id": "Q121",
+      "domain": "Prompt Engineering",
+      "scenario": "Document Processing",
+      "subdomain": "Test-Driven Iteration",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Claude implementing complex algorithm. Initial implementation has bugs. Comprehensive test suite available. Best iteration?",
+      "options": {
+        "A": "Run all tests, share all failures at once.",
+        "B": "Run tests, share one failure at a time.",
+        "C": "Share interacting failures together, independent ones sequentially.",
+        "D": "Have Claude write its own tests."
+      },
+      "correctAnswer": "C",
+      "explanation": "Interacting problems (failures sharing root cause): provide together. Independent: sequential. Mixed approach canonical.",
+      "tags": [
+        "interacting-failures",
+        "sequential"
+      ]
+    },
+    {
+      "id": "Q122",
+      "domain": "Prompt Engineering",
+      "scenario": "Customer Support",
+      "subdomain": "Self-Evaluation Patterns",
+      "difficulty": "hard",
+      "source": "Original",
+      "question": "Support agent generates resolutions. Quality varies: sometimes complete (policy, timeline, next steps), sometimes missing one. Specific gaps vary across cases. Want consistent completeness without human review overhead. Best?",
+      "options": {
+        "A": "Add 5 few-shot examples with all components.",
+        "B": "Self-critique step evaluating draft against criteria (policy, timeline, next steps).",
+        "C": "Restructure into separate calls per component.",
+        "D": "Higher-tier model."
+      },
+      "correctAnswer": "B",
+      "explanation": "'Gaps vary by case' = pattern variable. Self-critique con checklist esplicita verifies meccanicamente presence. Variable case-by-case = self-critique.",
+      "tags": [
+        "self-critique",
+        "variable-gaps"
+      ]
+    },
+    {
+      "id": "Q123",
+      "domain": "Prompt Engineering",
+      "scenario": "CI/CD",
+      "subdomain": "Few-Shot Prompting",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Automated PR review. Findings format varies: some have suggested fixes, some don't. Some severity, some not. Best fix?",
+      "options": {
+        "A": "Prose instructions about format.",
+        "B": "Add 3-4 few-shot examples showing exact desired format with all required fields.",
+        "C": "Structured output via tool_use with schema.",
+        "D": "Post-processing reformats."
+      },
+      "correctAnswer": "B",
+      "explanation": "Format consistency = few-shot canonical. 3-4 esempi del formato desiderato.",
+      "tags": [
+        "few-shot-format"
+      ]
+    },
+    {
+      "id": "Q124",
+      "domain": "Prompt Engineering",
+      "scenario": "Document Processing",
+      "subdomain": "Few-Shot Prompting",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Customer support agent classifies feedback into 12 categories. 89% stable for 8 months. Product team adds 3 new categories (15 total). Within 2 days: overall 71%, original 12 categories 76% (was 89%), new 3 at 58%. Most likely cause?",
+      "options": {
+        "A": "Training doesn't contain new categories.",
+        "B": "Increased categories beyond model's discrimination capacity.",
+        "C": "New categories at end of prompt benefit from recency, original 12 sit in less attended middle position, degrading accuracy across all.",
+        "D": "Prompt grew long enough that instruction-following weakened."
+      },
+      "correctAnswer": "C",
+      "explanation": "Drop ASIMMETRICO (vecchie 89→76, nuove 58). Asimmetria spiegata da position effect. D (capacity weakening) predirebbe uniform drop.",
+      "tags": [
+        "position-effect",
+        "asymmetric-drop"
+      ]
+    },
+    {
+      "id": "Q125",
+      "domain": "Prompt Engineering",
+      "scenario": "Customer Support",
+      "subdomain": "Tool Selection Reliability",
+      "difficulty": "hard",
+      "source": "Original",
+      "question": "Healthcare agent: medical questions about dosages for warfarin (margine terapeutico stretto), lithium: agent recommends 'consult your doctor' 91% even when prompt explicitly says 'provide standard dosage information for routine medications'. For routine medications: 6%. Cause?",
+      "options": {
+        "A": "Training prior creates cautious behavior on high-risk medications, overriding explicit prompt.",
+        "B": "Prompt has keyword routing for warfarin/lithium.",
+        "C": "Tool description lacks guidance on narrow therapeutic index drugs.",
+        "D": "Few-shot missing for high-risk medications."
+      },
+      "correctAnswer": "A",
+      "explanation": "Attributo intrinseco (narrow therapeutic index drug) + prompt explicit + cautious behavior systematic = training prior. Safety training bias override prompt.",
+      "tags": [
+        "training-prior",
+        "safety-trained-bias"
+      ]
+    },
+    {
+      "id": "Q126",
+      "domain": "Prompt Engineering",
+      "scenario": "Document Processing",
+      "subdomain": "Structured Output",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Travel agent: when customer requests bookings involving multiple travelers with different needs (e.g., 'flights for me and my mother who needs wheelchair assistance'), agent proceeds with standard booking without mentioning special assistance 67%, or asks user to repeat 28%. Single passenger with explicit needs: 92%. Cause?",
+      "options": {
+        "A": "Training prior conservative on special needs.",
+        "B": "System prompt lacks guidance for multi-traveler with mixed needs.",
+        "C": "Booking tool description doesn't handle mixed-needs scenarios.",
+        "D": "Prompt routing on 'wheelchair' keyword."
+      },
+      "correctAnswer": "B",
+      "explanation": "Capability esiste single-passenger (92%). Multi-traveler con mixed needs non coperto: agent default fallback or asks to repeat = guidance gap.",
+      "tags": [
+        "guidance-gap",
+        "multi-entity"
+      ]
+    },
+    {
+      "id": "Q127",
+      "domain": "Context Management",
+      "scenario": "Multi-Agent Research",
+      "subdomain": "Information Provenance",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Research synthesis produces report. Reviewer asks 'which sources support 23% market growth claim?'. Currently no inline attribution. How to enable provenance?",
+      "options": {
+        "A": "Post-synthesis step mapping claims to sources.",
+        "B": "Modify upstream agents to return findings with explicit claim-source pairings in structured format; synthesis preserves as inline citations.",
+        "C": "Higher-tier model.",
+        "D": "Re-run synthesis with attribution request."
+      },
+      "correctAnswer": "B",
+      "explanation": "Structured output upstream con claim-source pairings preserves provenance throughout pipeline. Post-hoc mapping lossy.",
+      "tags": [
+        "claim-source",
+        "provenance"
+      ]
+    },
+    {
+      "id": "Q128",
+      "domain": "Context Management",
+      "scenario": "Multi-Agent Research",
+      "subdomain": "Information Provenance",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Research report makes claims supported by sources of different recency (2024 vs 2018-2020). Quality team wants temporal provenance per claim. Best?",
+      "options": {
+        "A": "Synthesis estimates dates from content.",
+        "B": "Upstream agents include source date metadata; synthesis preserves date alongside each claim.",
+        "C": "Post-processing infers dates.",
+        "D": "Restrict to recent sources only."
+      },
+      "correctAnswer": "B",
+      "explanation": "Structured metadata (source date) upstream propagated through pipeline. Provenance preserved deterministically.",
+      "tags": [
+        "temporal-provenance",
+        "metadata"
+      ]
+    },
+    {
+      "id": "Q129",
+      "domain": "Context Management",
+      "scenario": "Document Processing",
+      "subdomain": "Information Provenance",
+      "difficulty": "medium",
+      "source": "Original",
+      "question": "Document analysis agent makes claims about market trends, citing 3-4 sources. Reviewers ask: 'is claim X supported by Source A or just inferred?'. Distinguishing direct quotes from inferences hard. Best?",
+      "options": {
+        "A": "Mark every claim with explicit provenance: direct_quote vs inferred_from + source IDs.",
+        "B": "Include all source content verbatim.",
+        "C": "Higher-tier model.",
+        "D": "Self-critique pass."
+      },
+      "correctAnswer": "A",
+      "explanation": "Structured provenance metadata (direct_quote vs inferred + sources) = transparent claim-to-source mapping.",
+      "tags": [
+        "provenance-types",
+        "transparency"
+      ]
+    },
+    {
+      "id": "Q130",
+      "domain": "Context Management",
+      "scenario": "Customer Support",
+      "subdomain": "Conversation Context Management",
+      "difficulty": "hard",
+      "source": "Original",
+      "question": "Long onboarding session for SaaS product: 15-30 min, multiple turns. When sessions exceed 25 min (~40+ turns), agent forgets earlier collected info, asks user to re-provide company name, industry, team size. save_onboarding_data tool persists to profile. Conversation history fully in context (45K tokens at turn 40, within 200K). Best?",
+      "options": {
+        "A": "Modify prompt to call save_onboarding_data after collecting each piece.",
+        "B": "PreToolUse hook blocks asking onboarding questions if save_onboarding_data hasn't been called.",
+        "C": "Add persistent 'collected_data' summary block to every prompt, populated from save_onboarding_data, separate from conversation history.",
+        "D": "Decompose onboarding into discrete phases as separate agent invocations with structured input/output."
+      },
+      "correctAnswer": "C",
+      "explanation": "Context 45K well within limit, attention dilution su long conversation. Persistent facts block = collected info always visible. Pattern persistent facts.",
+      "tags": [
+        "persistent-facts",
+        "attention-dilution"
+      ]
+    }
+  ]
+}
