@@ -301,3 +301,70 @@ Per ogni domanda, in ordine:
 - Lascia 10 minuti finali per review delle marcate
 - Non cambiare risposte già date a meno di errore evidente. Prima intuizione spesso è corretta
 - Trust your first instinct when reasoning has been applied correctly
+
+## Allineamento alla guida ufficiale CCA-F
+
+Questa sezione integra i contenuti sopra con i dettagli della *Claude Certified Architect – Foundations Certification Exam Guide* ufficiale (v0.1). I domini e i pesi coincidono con quanto già usato; qui si aggiungono i topic specifici che la guida testa esplicitamente.
+
+### Domini e pesi ufficiali
+
+- Domain 1 — Agentic Architecture & Orchestration (27%)
+- Domain 2 — Tool Design & MCP Integration (18%)
+- Domain 3 — Claude Code Configuration & Workflows (20%)
+- Domain 4 — Prompt Engineering & Structured Output (20%)
+- Domain 5 — Context Management & Reliability (15%)
+
+All'esame vengono presentati 4 scenari su 6, scelti a caso. I sei scenari ufficiali: Customer Support Resolution Agent; Code Generation with Claude Code; Multi-Agent Research System; Developer Productivity with Claude; Claude Code for CI/CD; Structured Data Extraction. (Nel pool dell'app "Document Processing" copre lo scenario di Structured Data Extraction e "General"/"Code Generation" coprono Developer Productivity.)
+
+### Subagent spawning e gestione sessione (Agent SDK)
+
+- **Task tool + allowedTools:** per spawnare subagent il coordinator DEVE avere `"Task"` nei suoi `allowedTools`. Se manca, il modello ripiega facendo tutto da solo.
+- **AgentDefinition:** descrizione, system prompt e tool restrictions di ogni subagent si configurano nel codice dell'Agent SDK (non in CLAUDE.md).
+- **Contesto esplicito:** i subagent NON ereditano la conversation history del coordinator; il contesto va passato esplicitamente nel prompt. Per il passaggio tra agenti, separa content da metadata (source URL, nomi documento, date) per preservare l'attribuzione.
+- **Parallel spawning:** più subagent in parallelo = più `Task` tool call in una singola response del coordinator, non turni separati.
+- **`--resume <session-name>`:** riprende una sessione nominata quando il contesto precedente è in gran parte valido; informa esplicitamente l'agente dei file cambiati per rianalisi mirata.
+- **`fork_session`:** crea rami indipendenti da una baseline condivisa per esplorare approcci divergenti (es. due strategie di refactoring) senza contaminazione.
+- **Resume vs nuova sessione:** se i tool result precedenti sono ormai stale, conviene una nuova sessione con summary iniettato invece di riprendere con risultati obsoleti.
+
+### tool_choice (API)
+
+- `"auto"`: il modello può chiamare un tool o rispondere con testo.
+- `"any"`: il modello DEVE chiamare un tool (ma sceglie quale) → usalo per garantire output strutturato.
+- Forced selection `{"type": "tool", "name": "..."}`: forza un tool specifico (es. `extract_metadata` prima degli enrichment tool), poi torni a `"any"` nei turni successivi.
+
+### Errori strutturati MCP (oltre `isError`)
+
+Ritorna metadata strutturati: `errorCategory` (transient / validation / business / permission) + `isRetryable` boolean + messaggio human-readable. Così l'agente ritenta solo i transient, comunica le business rule (es. refund oltre limite → `isRetryable: false`) e non spreca retry su input non validi. Errori generici ("Operation failed") nascondono contesto e impediscono recovery intelligente.
+
+### Structured output con tool_use
+
+- `tool_use` + JSON schema rigoroso = output schema-compliant, elimina errori di **sintassi** JSON.
+- Lo schema NON previene errori **semantici** (es. line item che non sommano): serve self-correction (estrai `calculated_total` accanto a `stated_total`, aggiungi `conflict_detected`).
+- Schema design: `required` vs `optional`, campi `nullable` per info che potrebbe mancare (previene hallucination), enum con valore `"other"` + campo detail per categorie estensibili, enum `"unclear"` per casi ambigui.
+- Retry-with-error-feedback: rimanda documento + estrazione fallita + errore di validazione specifico. I retry NON aiutano se l'informazione è assente dal documento (vs errori di formato/struttura).
+
+### CLAUDE.md, comandi e contesto (Claude Code)
+
+- **`@import`:** referenzia file esterni per tenere CLAUDE.md modulare (ogni package importa solo gli standard rilevanti).
+- **`/memory`:** verifica quali file di memoria/CLAUDE.md sono effettivamente caricati → diagnostica problemi di config loading.
+- **`/compact`:** riduce l'uso del contesto durante sessioni lunghe quando la finestra si riempie di output verboso (la context degradation non si auto-corregge).
+- **Scratchpad files:** persistono key findings tra i confini di contesto, per contrastare la degradation nelle sessioni estese.
+
+### Batch processing (Domain 4)
+
+- Message Batches API: 50% di risparmio, finestra fino a 24h, nessuna SLA di latenza, `custom_id` per correlare richiesta/risposta. NON supporta tool calling multi-turn in una singola richiesta.
+- Adatta: report overnight, audit settimanali, generazione test notturna. Non adatta: check pre-merge bloccanti.
+- Gestione fallimenti: ri-sottometti solo i documenti falliti (per `custom_id`), eventualmente con modifiche (chunking dei documenti troppo grandi). Calibra la frequenza di sottomissione sulla SLA.
+
+### Affidabilità e human review (Domain 5)
+
+- **Confidence calibration:** confidence a livello di campo calibrati su un validation set etichettato; analizza l'accuratezza segmentata per tipo di documento e per campo (una metrica aggregata, es. 97%, può mascherare segmenti deboli).
+- **Stratified random sampling:** campiona le estrazioni high-confidence per misurare nel tempo l'error rate e intercettare pattern di errore nuovi prima di ridurre la revisione umana.
+- **Multi-instance verification:** un'istanza indipendente (senza il reasoning del generatore) è più efficace del self-review per individuare problemi sottili.
+- **Escalation:** legittima quando il cliente lo chiede esplicitamente, quando la policy è silente/ha gap, o quando l'agente non riesce a progredire. Sentiment e confidence auto-dichiarata sono proxy inaffidabili della complessità del caso. Match multipli → chiedi un identificatore aggiuntivo.
+
+### In-scope (ribadito) e Out-of-scope (distractor tipici)
+
+**In-scope:** agentic loop con `stop_reason`, orchestrazione coordinator-subagent, context passing esplicito, tool interface design, MCP (server, tool, resource, `isError`, `.mcp.json`, env var expansion), error handling strutturato, escalation, CLAUDE.md hierarchy + `@import` + `.claude/rules/` glob, slash commands e skills (`context: fork`, `allowed-tools`, `argument-hint`), plan mode, iterative refinement, structured output via `tool_use`/`tool_choice`, few-shot, batch processing, context window management, human review/confidence calibration, information provenance.
+
+**Out-of-scope (se appaiono come opzione, sono quasi sempre distractor):** fine-tuning o training di modelli custom; autenticazione/billing/account API; deploy/hosting di MCP server (infra, networking, container); architettura interna/training/pesi del modello; Constitutional AI, RLHF; embedding/vector DB; computer use e analisi immagini/vision; streaming/SSE; rate limit/quote/pricing; OAuth/rotazione chiavi; config cloud specifiche (AWS/GCP/Azure); benchmarking; dettagli implementativi del prompt caching; algoritmi di tokenizzazione. Nota ricorrente: **fine-tuning** e **higher-tier model** come "fix" sono quasi sempre risposte sbagliate nel framework CCA-F.

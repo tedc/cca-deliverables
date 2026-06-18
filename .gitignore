@@ -7,3 +7,7 @@ node_modules
 *.tsbuildinfo
 next-env.d.ts
 .playwright-mcp
+
+# Confidential Anthropic exam guide — do NOT commit
+ClaudeCertifiedArchitect_FoundationsCertificationExamGuide.pdf
+*.pdf
